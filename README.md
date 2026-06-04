@@ -38,15 +38,9 @@ Bridging uses [HyperFungibleToken](https://docs.hyperbridge.network/developers/s
 
 ```
 src/core/config/registry/hft/
-  mainnet.ts   # empty until mainnet launch
-  testnet.ts   # WBNB test pair (BSC Testnet ↔ Polygon Amoy)
-  README.md    # partner guide for adding tokens via PR
+  mainnet.ts  
+  testnet.ts
+  README.md   # partner guide for adding tokens via PR
 ```
 
-**Testnet:** switch to testnet in the app to bridge WBNB between BSC Testnet and Polygon Amoy (matches SDK integration tests).
-
-**Mainnet:** shows an empty state until tokens are added to `mainnet.ts`.
-
 **SDK:** requires `@hyperbridge/sdk` ≥ 2.2.0 for HyperFungibleToken support.
-
-This repo is intentionally **not** a monorepo. HyperFX lives in the separate `hyperbridge-fe` repository.
