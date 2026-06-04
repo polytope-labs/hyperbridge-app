@@ -2,6 +2,25 @@
 
 Standalone Vite + React app for the Hyperbridge bridge product.
 
+## Adding a bridged token (partners)
+
+**Want your token in the bridge UI?** Follow the partner guide — do not edit token lists elsewhere.
+
+| | |
+|---|---|
+| **Full guide** | [`src/core/config/registry/hft/README.md`](./src/core/config/registry/hft/README.md) |
+| **Registry files** | `mainnet.ts` / `testnet.ts` in that folder |
+| **Docs** | [HyperFungibleToken](https://docs.hyperbridge.network/developers/evm/hyper-fungible-token/hyper-fungible-token/) |
+| **SDK** | `@hyperbridge/sdk` ≥ 2.2.0 |
+
+**Quick checklist (details in the guide above):**
+
+1. Deploy HFT / WrappedHFT contracts and register peer chains on-chain.
+2. Add logo → `public/tokens/` + `src/shared/config/registry/token-images.json`.
+3. Append your token to `mainnet.ts` or `testnet.ts`.
+4. Confirm chains exist in `src/shared/config/registry/evm-networks.ts` with `featureSupported: ["bridge"]`.
+5. Open a PR and run `pnpm test src/shared/config/token-registry`.
+
 ## Setup
 
 ```bash
@@ -32,15 +51,6 @@ src/
   web3-connect/   # Wallet connection (inlined from former web3-connect package)
 ```
 
-## HyperFungibleToken registry
+### HFT token registry
 
-Bridging uses [HyperFungibleToken](https://docs.hyperbridge.network/developers/sdk/hyper-fungible-token/). Token definitions live in:
-
-```
-src/core/config/registry/hft/
-  mainnet.ts  
-  testnet.ts
-  README.md   # partner guide for adding tokens via PR
-```
-
-**SDK:** requires `@hyperbridge/sdk` ≥ 2.2.0 for HyperFungibleToken support.
+Partner token definitions live under `src/core/config/registry/hft/`. See **[Adding a bridged token (partners)](#adding-a-bridged-token-partners)** at the top of this file.

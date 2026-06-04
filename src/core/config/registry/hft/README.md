@@ -1,5 +1,7 @@
 # HyperFungibleToken Registry
 
+> **Entry point:** This guide is linked from the [repo root README](../../../../../README.md#adding-a-bridged-token-partners).
+
 This folder is the single source of truth for bridged tokens in the app.
 We use [HyperFungibleToken](https://docs.hyperbridge.network/developers/evm/hyper-fungible-token/hyper-fungible-token/) (HFT) for bridge routes.
 
