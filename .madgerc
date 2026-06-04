@@ -1,0 +1,10 @@
+{
+  "warning": true,
+  "extensions": "ts,tsx,js,jsx",
+  "tsConfig": "tsconfig.app.json",
+  "detectiveOptions": {
+    "ts": {
+      "skipTypeImports": true
+    }
+  }
+}

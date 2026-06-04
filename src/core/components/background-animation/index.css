@@ -1,0 +1,140 @@
+@import "tailwindcss";
+
+.hb-bg {
+  @media screen and (min-width: 1920px) {
+    & {
+      @apply mask-x-from-[90%] mask-x-to-[100%] container;
+      width: 100%;
+      max-width: 1920px;
+    }
+  }
+}
+
+.hb-bg button {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+  cursor: pointer;
+  z-index: 999;
+}
+
+.hb-bg .base {
+  width: 100%;
+  height: var(--hb-bg-height);
+  overflow: hidden;
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    display: block;
+    left: 0;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(
+      0deg,
+      #00ff98 0%,
+      #5126ff 20%,
+      #ff00d4 41%,
+      #e7ff30 64%,
+      #ffb83d 92%
+    );
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    display: block;
+    right: 0;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(
+      0deg,
+      #ffb83d 0%,
+      #e7ff30 20%,
+      #ff00d4 41%,
+      #5126ff 64%,
+      #00ff98 92%
+    );
+  }
+}
+
+:root {
+  --hb-bg-blur-color: green;
+  --hb-bg-gradient-black: var(--color-brand-black-600);
+  --hb-bg-background-lighter: #404040;
+}
+
+.hb-bg .mask {
+  inset: 0;
+  z-index: 20;
+  position: absolute;
+  background-image: repeating-linear-gradient(
+    transparent,
+    transparent 1px,
+    var(--hb-bg-gradient-black) 1px,
+    var(--hb-bg-gradient-black) 12px
+  );
+}
+
+.hb-bg .soft-linear-overlay {
+  --translate-dir: -1;
+  width: 20%;
+  z-index: 10;
+  height: var(--hb-bg-height);
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: skewX(12deg) scale(2.4) translate(-50%);
+  transition: all 5s ease-out;
+  filter: url(#filter0_f_4029_6538);
+  background-image: linear-gradient(
+    -90deg,
+    var(--hb-bg-background-lighter),
+    var(--hb-bg-background-lighter) 20%,
+    80%,
+    var(--hb-bg-gradient-black)
+  );
+}
+
+@property --translate-dir {
+  syntax: "<integer>";
+  inherits: true;
+  initial-value: 1;
+}
+
+.hb-bg .soft-linear-overlay-mirror {
+  --translate-dir: 1;
+  left: unset;
+  right: 0;
+  transform: skewX(-12deg) scale(2.4) translate(50%);
+  background-image: linear-gradient(
+    90deg,
+    var(--hb-bg-background-lighter),
+    var(--hb-bg-background-lighter) 20%,
+    80%,
+    var(--hb-bg-gradient-black)
+  );
+}
+
+.hb-bg .base[data-state="active"] .soft-linear-overlay {
+  width: 0%;
+  transition: all 0.3s ease-in-out;
+  transform: skew(0deg) scale(2) translate(calc(var(--translate-dir) * 100%));
+}
+
+.hb-bg .overlay {
+  position: absolute;
+  z-index: 10;
+  right: 50%;
+  transform-origin: center right;
+  transform: translate(2%) scale(1.2);
+  bottom: 0;
+  top: 0;
+}
+
+.hb-bg .overlay-mirror {
+  transform: translate(-1%) scale(1.2) rotateY(180deg);
+}
