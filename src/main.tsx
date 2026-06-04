@@ -1,5 +1,5 @@
-import "@/lib/polyfill"
 import "./index.css"
+import "@/lib/polyfill"
 import { StrictMode } from "react"
 import { createRoot } from "react-dom/client"
 import { App } from "./App"
