@@ -9,8 +9,8 @@ We use [HyperFungibleToken](https://docs.hyperbridge.network/developers/evm/hype
 
 Use the EVM checklist below for HFT / WrappedHFT deployments across EVM chains.
 For tokens that originate on a Substrate chain, use the Substrate checklist in
-[Substrate-origin tokens](#substrate-origin-tokens). The legacy Token Gateway
-flow is deprecated and should not be used.
+[Substrate-origin tokens](#substrate-origin-tokens). Hyperbridge token routes
+use HFT contracts on EVM and `pallet-hft` on Substrate.
 
 1. **Deploy contracts** on each chain (WrappedHFT on home chain, HFT on remote chains) and register peer chains on-chain.
 2. **Add a logo** under `public/tokens/` and register the symbol in `src/shared/config/registry/token-images.json`.
