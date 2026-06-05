@@ -7,6 +7,17 @@ We use [HyperFungibleToken](https://docs.hyperbridge.network/developers/evm/hype
 
 ## Adding a token (partner PRs)
 
+Use the EVM checklist below for HFT / WrappedHFT deployments across EVM chains.
+For tokens that originate on a Substrate chain, first complete the Substrate
+registration flow in the
+[Hyperbridge Polkadot token guide](https://docs.hyperbridge.network/developers/polkadot/token-gateway/#registering-tokens-on-hyperbridge-via-governance):
+register the asset locally in the runtime/pallet, call
+`tokenGovernor.createAssetMapping`, and batch
+`tokenGovernor.registerStandaloneChainNativeAssets` when the asset is natively
+minted on Substrate. The frontend supports Substrate to EVM routes once the
+on-chain registration, Substrate network config, EVM destination config, and app
+registry entries are in place.
+
 1. **Deploy contracts** on each chain (WrappedHFT on home chain, HFT on remote chains) and register peer chains on-chain.
 2. **Add a logo** under `public/tokens/` and register the symbol in `src/shared/config/registry/token-images.json`.
 3. **Append an entry** to the environment file:
@@ -40,7 +51,7 @@ We use [HyperFungibleToken](https://docs.hyperbridge.network/developers/evm/hype
 
 Each deployment lists every other deployment as a bridge destination automatically — no need to maintain `recipientNetworks` manually.
 
-4. **Ensure networks exist** in `src/shared/config/registry/evm-networks.ts` with correct `ismpHost`, `stateMachineId`, and `featureSupported: ["bridge"]`.
+4. **Ensure EVM networks exist** in `src/shared/config/registry/evm-networks.ts` with correct `ismpHost`, `stateMachineId`, and `featureSupported: ["bridge"]`.
 5. **Run tests**: `pnpm test src/shared/config/token-registry`
 
 ## Architecture
