@@ -8,15 +8,9 @@ We use [HyperFungibleToken](https://docs.hyperbridge.network/developers/evm/hype
 ## Adding a token (partner PRs)
 
 Use the EVM checklist below for HFT / WrappedHFT deployments across EVM chains.
-For tokens that originate on a Substrate chain, first complete the Substrate
-registration flow in the
-[Hyperbridge Polkadot token guide](https://docs.hyperbridge.network/developers/polkadot/token-gateway/#registering-tokens-on-hyperbridge-via-governance):
-register the asset locally in the runtime/pallet, call
-`tokenGovernor.createAssetMapping`, and batch
-`tokenGovernor.registerStandaloneChainNativeAssets` when the asset is natively
-minted on Substrate. The frontend supports Substrate to EVM routes once the
-on-chain registration, Substrate network config, EVM destination config, and app
-registry entries are in place.
+For tokens that originate on a Substrate chain, use the Substrate checklist in
+[Substrate-origin tokens](#substrate-origin-tokens). The legacy Token Gateway
+flow is deprecated and should not be used.
 
 1. **Deploy contracts** on each chain (WrappedHFT on home chain, HFT on remote chains) and register peer chains on-chain.
 2. **Add a logo** under `public/tokens/` and register the symbol in `src/shared/config/registry/token-images.json`.
@@ -53,6 +47,71 @@ Each deployment lists every other deployment as a bridge destination automatical
 
 4. **Ensure EVM networks exist** in `src/shared/config/registry/evm-networks.ts` with correct `ismpHost`, `stateMachineId`, and `featureSupported: ["bridge"]`.
 5. **Run tests**: `pnpm test src/shared/config/token-registry`
+
+## Substrate-origin tokens
+
+Substrate to EVM bridging is supported through
+[`pallet-hyper-fungible-token`](https://docs.hyperbridge.network/developers/polkadot/hyper-fungible-token/#registering-a-token)
+and the EVM `HyperFungibleToken` / `WrappedHyperFungibleToken` contracts. The
+token is registered in `pallet-hft` on the Substrate chain, and the peer EVM
+contracts must trust that pallet instance.
+
+### Runtime prerequisites
+
+1. Add `pallet-hyper-fungible-token` to the Substrate runtime.
+2. Configure it with the runtime's ISMP dispatcher, fungible asset implementation, native currency, native asset ID, decimals, and `CreateOrigin`.
+3. Register the pallet in the ISMP router so incoming Hyperbridge messages route to `pallet_hyper_fungible_token::Pallet`.
+4. Create or confirm the local asset ID in the runtime asset registry before registering it with HFT.
+
+### Register the token in pallet-hft
+
+Call the pallet's `register_token` extrinsic from the configured `CreateOrigin`.
+The registration describes the local asset and every remote chain that can
+receive it:
+
+```rust
+TokenRegistration {
+    local_id,
+    native,
+    chains,
+}
+```
+
+| Field | Meaning |
+|-------|---------|
+| `local_id` | Local asset ID in the Substrate runtime's asset registry. |
+| `native` | `true` for assets originating on this Substrate chain; `false` for imported/bridged assets. |
+| `chains` | Map of destination `StateMachine` values to per-chain HFT configuration. |
+| `chains[].token_contract` | Destination module ID. For EVM destinations, use the 20-byte HFT / WrappedHFT contract address. |
+| `chains[].decimals` | Destination token decimals, usually `18` for EVM contracts. |
+
+For Substrate-native assets, set `native: true`; sends escrow the local asset in
+the pallet custody account. For non-native assets represented on the Substrate
+chain, set `native: false`; sends burn the local representation.
+
+### Register the Substrate peer on EVM
+
+Each destination EVM HFT / WrappedHFT contract must register the Substrate pallet
+as a trusted peer. Call `addChain` on the EVM contract with the Substrate
+state machine and the pallet module ID bytes:
+
+```solidity
+token.addChain(
+    StateMachine.polkadot(paraId),
+    abi.encodePacked(bytes8("pall_hft"))
+);
+```
+
+The module ID must match the `PALLET_ID` configured by
+`pallet-hyper-fungible-token`.
+
+### Add the route to this frontend
+
+1. Add the Substrate source chain to `src/shared/config/registry/substrate-networks.ts` if it is not already present.
+2. Ensure each EVM destination exists in `src/shared/config/registry/evm-networks.ts` with `featureSupported: ["bridge"]`.
+3. Add the token logo under `public/tokens/` and register the symbol in `src/shared/config/registry/token-images.json`.
+4. Add the token to the app token registry for each supported source chain. The Substrate-side entry must include the local `assetId`, token metadata, balance pallet information when required, and `recipientNetworks` pointing at the EVM destinations. The EVM-side entry must include the HFT / WrappedHFT contract address and `recipientNetworks` pointing back at the Substrate source.
+5. Run `pnpm test src/shared/config/token-registry`.
 
 ## Architecture
 

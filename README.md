@@ -11,7 +11,7 @@ Standalone Vite + React app for the Hyperbridge bridge product.
 | **Full guide** | [`src/core/config/registry/hft/README.md`](./src/core/config/registry/hft/README.md) |
 | **Registry files** | `mainnet.ts` / `testnet.ts` in that folder |
 | **EVM HFT docs** | [HyperFungibleToken](https://docs.hyperbridge.network/developers/evm/hyper-fungible-token/hyper-fungible-token/) |
-| **Substrate token docs** | [Token Gateway registration](https://docs.hyperbridge.network/developers/polkadot/token-gateway/#registering-tokens-on-hyperbridge-via-governance) |
+| **Substrate HFT docs** | [Pallet Hyper Fungible Token](https://docs.hyperbridge.network/developers/polkadot/hyper-fungible-token/#registering-a-token) |
 | **SDK** | `@hyperbridge/sdk` ≥ 2.2.0 |
 
 **EVM HFT checklist (details in the guide above):**
@@ -22,17 +22,13 @@ Standalone Vite + React app for the Hyperbridge bridge product.
 4. Confirm chains exist in `src/shared/config/registry/evm-networks.ts` with `featureSupported: ["bridge"]`.
 5. Open a PR and run `pnpm test src/shared/config/token-registry`.
 
-**Substrate-origin tokens:** Substrate to EVM bridging is supported, but native
-Substrate assets need the additional registration flow documented in the
-Hyperbridge Polkadot guide. Register the asset locally in the Substrate
-runtime/pallet, then submit the Hyperbridge governance proposal that calls
-`tokenGovernor.createAssetMapping`; for assets natively minted on a Substrate
-chain, batch it with `tokenGovernor.registerStandaloneChainNativeAssets`.
-After on-chain registration is complete, add the token to this app registry and
-make sure the Substrate source exists in
-`src/shared/config/registry/substrate-networks.ts` and each EVM destination has
-`featureSupported: ["bridge"]` in
-`src/shared/config/registry/evm-networks.ts`.
+**Substrate HFT checklist:**
+
+1. Make sure the source chain has `pallet-hyper-fungible-token` wired into its runtime and ISMP router.
+2. Create or confirm the local asset ID in the chain's asset registry.
+3. Register the token in `pallet-hft` with `register_token`, including the destination EVM HFT / WrappedHFT contract address and decimals.
+4. On each EVM HFT / WrappedHFT contract, register the Substrate pallet as a trusted peer with `addChain`.
+5. Add the token to this app registry, make sure the Substrate source exists in `src/shared/config/registry/substrate-networks.ts`, and make sure each EVM destination has `featureSupported: ["bridge"]` in `src/shared/config/registry/evm-networks.ts`.
 
 ## Setup
 
