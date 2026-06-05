@@ -1,10 +1,11 @@
+import { resolvePublicUrl } from "@hyperbridge-fe/shared/lib"
 import { Image } from "@unpic/react"
 
 export const Loader = ({ size = 12 }) => {
   return (
     <div className="animate-spin" style={{ width: size, height: size }}>
       <Image
-        src="/assets/illustrations/loader.png"
+        src={resolvePublicUrl("/assets/illustrations/loader.png")}
         alt="loader"
         width={size}
         priority={true}

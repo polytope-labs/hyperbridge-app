@@ -12,6 +12,7 @@ import * as Sentry from "@sentry/react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import { ConnectKitProvider } from "connectkit"
+import { resolvePublicUrl } from "@hyperbridge-fe/shared/lib"
 import { lazy, Suspense } from "react"
 import { Route, Routes } from "react-router"
 import { BrowserRouter } from "react-router"
@@ -43,7 +44,7 @@ function AppShell() {
   if (MAINTENANCE_MODE) {
     return (
       <div className="bg-brand-black-600 flex min-h-screen flex-col items-center justify-center px-6 text-center">
-        <img src="/logo.svg" alt="Hyperbridge" className="mb-10 h-10" />
+        <img src={resolvePublicUrl("/logo.svg")} alt="Hyperbridge" className="mb-10 h-10" />
         <h1 className="text-brand-white-500 mb-4 text-3xl font-semibold">
           Under Maintenance
         </h1>
@@ -88,7 +89,7 @@ function AppShell() {
 
 export function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <WagmiProvider config={WagmiConfig}>
         <QueryClientProvider client={queryClient}>
           <ConnectKitProvider>

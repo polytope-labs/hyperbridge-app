@@ -29,7 +29,7 @@ import {
 } from "@app/stores/transfer-computed"
 import { BridgeInput, Button, GradientButton, TagButton } from "@hyperbridge/ui"
 import { NetworkImpl } from "@hyperbridge-fe/shared/factories"
-import { isAssetHub, matchChain } from "@hyperbridge-fe/shared/lib"
+import { isAssetHub, matchChain, resolvePublicUrl } from "@hyperbridge-fe/shared/lib"
 import { Portal } from "@radix-ui/react-portal"
 import { flow, pipe } from "effect"
 import { type Lambda, observe, runInAction } from "mobx"
@@ -289,7 +289,7 @@ export const BridgeTransfer = observer(function BridgeTransfer() {
               })),
               O.getOrElse(() => ({
                 name: "Default",
-                image: "/default-logo.png",
+                image: resolvePublicUrl("/default-logo.png"),
               })),
             ),
             amount: receivedAmount.get(),

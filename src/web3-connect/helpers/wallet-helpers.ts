@@ -1,4 +1,5 @@
 import type { NetworkTagSimple } from "@hyperbridge-fe/shared"
+import { resolvePublicUrl } from "@hyperbridge-fe/shared/lib"
 import { EVM_PROVIDERS, type WalletProviderType } from "@/constants"
 
 export { resolveNetworkGroup as resolveNetworkGroupByChain } from "@hyperbridge-fe/shared"
@@ -42,7 +43,7 @@ export const getProviderIcon = (provider: WalletProviderType): string => {
     coinbase: "/wallets/coinbase.svg",
   }
 
-  return iconMap[provider] || "/tokens/unknown.svg"
+  return resolvePublicUrl(iconMap[provider] || "/tokens/unknown.svg")
 }
 
 export const getProviderName = (provider: WalletProviderType): string => {

@@ -25,6 +25,7 @@ import {
 } from "@hyperbridge-fe/shared/config"
 import { toHex } from "viem"
 import { SubstrateApiStore } from "@/config/services/substrate-api.ts"
+import { resolvePublicUrl } from "@/lib/public-url"
 import { rootLogger } from "./logger"
 
 interface TokenInfo {
@@ -36,7 +37,7 @@ const tokenImages = tokenImagesData as Record<string, string>
 
 const UNKNOWN_TOKEN_INFO: TokenInfo = {
   normalizedName: "UNKNOWN",
-  imageUrl: tokenImages.UNKNOWN,
+  imageUrl: resolvePublicUrl(tokenImages.UNKNOWN),
 }
 
 const nameNormalizationMap: Record<string, string> = {
@@ -119,7 +120,7 @@ export function getTokenInfo(tokenName: string | null | undefined): TokenInfo {
 
   return {
     normalizedName,
-    imageUrl,
+    imageUrl: resolvePublicUrl(imageUrl),
   }
 }
 

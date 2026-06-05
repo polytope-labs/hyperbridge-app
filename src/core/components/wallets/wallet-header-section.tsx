@@ -7,6 +7,7 @@ import {
 } from "@hyperbridge/ui"
 import { Plus } from "@hyperbridge/ui/icons"
 import type { Account as Web3ConnectAccount } from "@hyperbridge-fe/web3-connect"
+import { resolvePublicUrl } from "@hyperbridge-fe/shared/lib"
 import { Image } from "@unpic/react"
 import { ArrowLeftRightIcon } from "lucide-react"
 import { observer } from "mobx-react"
@@ -61,7 +62,7 @@ export const WalletManageAccount = observer(function WalletManageAccount() {
                 <div className="flex items-center gap-1">
                   <div className="border-brand-black-600 flex size-4 items-center justify-center overflow-hidden rounded-[5px] border bg-white">
                     <Image
-                      src="/networks/polkadot.png"
+                      src={resolvePublicUrl("/networks/polkadot.png")}
                       alt="Polkadot Logo"
                       width={16}
                       height={16}
@@ -104,13 +105,13 @@ export const WalletManageAccount = observer(function WalletManageAccount() {
                       address={normalized.shortenedAddress}
                       network={{
                         name: "Polkadot",
-                        image: "/networks/polkadot.png",
+                        image: resolvePublicUrl("/networks/polkadot.png"),
                       }}
                       wallet={{
                         name: providerEntry?.wallet?.title || account.provider,
                         image:
                           providerEntry?.wallet?.logo.src ||
-                          "/tokens/unknown.svg",
+                          resolvePublicUrl("/tokens/unknown.svg"),
                       }}
                       isActive={isSelected}
                       onCopy={() =>
@@ -126,7 +127,7 @@ export const WalletManageAccount = observer(function WalletManageAccount() {
               <NetworkGroupItem
                 image={{
                   name: "Polkadot",
-                  src: "/networks/polkadot.png",
+                  src: resolvePublicUrl("/networks/polkadot.png"),
                 }}
                 description={"Use Polkadot-compatible wallets"}
                 onConnect={() => handleNetworkSelect("substrate")}
@@ -141,7 +142,7 @@ export const WalletManageAccount = observer(function WalletManageAccount() {
                 <div className="flex items-center gap-1">
                   <div className="border-brand-black-600 flex size-4 items-center justify-center overflow-hidden rounded-[5px] border bg-white">
                     <Image
-                      src="/networks/ethereum.svg"
+                      src={resolvePublicUrl("/networks/ethereum.svg")}
                       alt="Ethereum Logo"
                       width={16}
                       height={16}
@@ -183,13 +184,13 @@ export const WalletManageAccount = observer(function WalletManageAccount() {
                       address={normalized.shortenedAddress}
                       network={{
                         name: "Ethereum",
-                        image: "/networks/ethereum.svg",
+                        image: resolvePublicUrl("/networks/ethereum.svg"),
                       }}
                       wallet={{
                         name: providerEntry?.wallet?.title || account.provider,
                         image:
                           providerEntry?.wallet?.logo.src ||
-                          "/tokens/unknown.svg",
+                          resolvePublicUrl("/tokens/unknown.svg"),
                       }}
                       isActive={isSelected}
                       onCopy={() =>
@@ -205,7 +206,7 @@ export const WalletManageAccount = observer(function WalletManageAccount() {
               <NetworkGroupItem
                 image={{
                   name: "Ethereum",
-                  src: "/networks/ethereum.svg",
+                  src: resolvePublicUrl("/networks/ethereum.svg"),
                 }}
                 description={"Use EVM-compatible wallets"}
                 onConnect={() => handleNetworkSelect("evm")}

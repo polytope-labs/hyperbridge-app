@@ -1,10 +1,9 @@
+import { APP_URL } from "@/config/constants"
 import { copyToClipboard } from "@/lib/utils/clipboard"
 import { toast } from "@/lib/utils/toast"
 
 export const getReferralLink = (address: string): string => {
-  const referralLink = `https://app.hyperbridge.network/?ref=${address}`
-
-  return referralLink
+  return `${APP_URL}/?ref=${address}`
 }
 
 export const handleCopyReferralLink = async (address: string) => {

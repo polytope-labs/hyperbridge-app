@@ -1,4 +1,5 @@
 import { TokenImpl } from "@hyperbridge-fe/shared/factories"
+import { resolvePublicUrl } from "@hyperbridge-fe/shared/lib"
 import { resolveNetworkGroup } from "@hyperbridge-fe/shared"
 import { observable } from "mobx"
 import { fromPromise } from "mobx-utils"
@@ -27,7 +28,7 @@ export const EMPTY_TOKEN = TokenImpl.evm({
   name: "No token",
   symbol: "",
   decimals: 18,
-  logo: "/tokens/unknown.svg",
+  logo: resolvePublicUrl("/tokens/unknown.svg"),
   disabled: true,
   address: "0x0000000000000000000000000000000000000000",
   recipientNetworks: [],

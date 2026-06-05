@@ -1,3 +1,5 @@
+import { resolvePublicUrl } from "@hyperbridge-fe/shared/lib"
+
 export type ProductKind = "bridge" | "hyperfx"
 
 const bridgeAppUrl = import.meta.env.VITE_BRIDGE_APP_URL
@@ -71,7 +73,7 @@ export function getMobileMenuLinks(product: ProductKind): MobileMenuLink[] {
     links.push({
       label: "Bridge",
       href: bridgeAppUrl,
-      img: "/assets/illustrations/bridge.svg",
+      img: resolvePublicUrl("/assets/illustrations/bridge.svg"),
       isExternal: true,
     })
   }
@@ -80,7 +82,7 @@ export function getMobileMenuLinks(product: ProductKind): MobileMenuLink[] {
     links.push({
       label: "HyperFX",
       href: hyperfxAppUrl,
-      img: "/assets/illustrations/intents.svg",
+      img: resolvePublicUrl("/assets/illustrations/intents.svg"),
       isExternal: true,
     })
   }
@@ -88,7 +90,7 @@ export function getMobileMenuLinks(product: ProductKind): MobileMenuLink[] {
   links.push({
     label: "Explorer",
     href: "https://explorer.hyperbridge.network/",
-    img: "/assets/illustrations/explorer.svg",
+    img: resolvePublicUrl("/assets/illustrations/explorer.svg"),
     isExternal: true,
   })
 

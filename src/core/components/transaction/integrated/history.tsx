@@ -8,6 +8,7 @@ import {
   TxListItemProcessing,
 } from "@hyperbridge/ui"
 import { ArtifactNews } from "@hyperbridge/ui/icons"
+import { resolvePublicUrl } from "@hyperbridge-fe/shared/lib"
 import { format, fromUnixTime } from "date-fns"
 import isMobile from "is-mobile"
 import { toJS } from "mobx"
@@ -108,7 +109,7 @@ function extractTxDisplayData(
         amount: "0",
         receiverAmount: "0",
         tokenSymbol: "Unknown",
-        tokenImage: "/tokens/unknown.svg",
+        tokenImage: resolvePublicUrl("/tokens/unknown.svg"),
       }
     },
   })
@@ -334,13 +335,13 @@ const HistoryItem = observer(function HistoryItem({
             caption={caption}
             completedAt={completedAt}
             from={{
-              badgeSrc: sourceNetwork?.logo || "/tokens/unknown.svg",
+              badgeSrc: sourceNetwork?.logo || resolvePublicUrl("/tokens/unknown.svg"),
               badgeAlt: sourceNetwork?.name || "Unknown Network",
               src: transactionData.tokenImage,
               alt: transactionData.tokenSymbol,
             }}
             to={{
-              badgeSrc: destNetwork?.logo || "/tokens/unknown.svg",
+              badgeSrc: destNetwork?.logo || resolvePublicUrl("/tokens/unknown.svg"),
               badgeAlt: destNetwork?.name || "Unknown Network",
               src: transactionData.tokenImage,
               alt: transactionData.tokenSymbol,
@@ -377,13 +378,13 @@ const ActiveHistoryItem = observer(function ActiveHistoryItem({
             caption={caption}
             status={TxImpl.is_timed_out(tx) ? "failed" : "processing"}
             from={{
-              badgeSrc: sourceNetwork?.logo || "/tokens/unknown.svg",
+              badgeSrc: sourceNetwork?.logo || resolvePublicUrl("/tokens/unknown.svg"),
               badgeAlt: sourceNetwork?.name || "Unknown Network",
               src: transactionData.tokenImage,
               alt: transactionData.tokenSymbol,
             }}
             to={{
-              badgeSrc: destNetwork?.logo || "/tokens/unknown.svg",
+              badgeSrc: destNetwork?.logo || resolvePublicUrl("/tokens/unknown.svg"),
               badgeAlt: destNetwork?.name || "Unknown Network",
               src: transactionData.tokenImage,
               alt: transactionData.tokenSymbol,

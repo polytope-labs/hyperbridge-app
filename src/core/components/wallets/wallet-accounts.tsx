@@ -1,6 +1,7 @@
 import React from "react"
 import { HeaderNested, ListSection, WalletProviderItem } from "@hyperbridge/ui"
 import type { NetworkTagSimple } from "@hyperbridge-fe/shared"
+import { resolvePublicUrl } from "@hyperbridge-fe/shared/lib"
 import {
   normalizeProviderType,
   useEnableWallet,
@@ -90,7 +91,7 @@ export const WalletAccounts = observer(
                     key={provider.type}
                     image={{
                       name: provider.wallet.title,
-                      src: provider.wallet.logo.src,
+                      src: resolvePublicUrl(provider.wallet.logo.src),
                     }}
                     status={getUIWalletStatus(provider)}
                     installed={false}
@@ -109,7 +110,7 @@ export const WalletAccounts = observer(
                     key={provider.type}
                     image={{
                       name: provider.wallet.title,
-                      src: provider.wallet.logo.src,
+                      src: resolvePublicUrl(provider.wallet.logo.src),
                     }}
                     status="idle"
                     installed={false}
@@ -217,7 +218,7 @@ const WalletConnectionIntegrated = observer(
         key={provider.type}
         image={{
           name: provider.wallet.title,
-          src: provider.wallet.logo.src,
+          src: resolvePublicUrl(provider.wallet.logo.src),
         }}
         status={getUIWalletStatus(provider)}
         onConnect={() => {

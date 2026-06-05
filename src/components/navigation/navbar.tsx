@@ -10,6 +10,7 @@ import {
   HeaderGradient,
 } from "@hyperbridge/ui"
 import { Mainnet, Testnet } from "@hyperbridge/ui/icons"
+import { resolvePublicUrl } from "@hyperbridge-fe/shared/lib"
 import { Image } from "@unpic/react"
 import { observer } from "mobx-react"
 import { Link } from "react-router"
@@ -33,7 +34,7 @@ export const Navbar = () => {
             <Image
               className="max-w-full shrink-0 object-contain"
               fetchPriority="high"
-              src="/logo.svg"
+              src={resolvePublicUrl("/logo.svg")}
               alt="Hyperbridge Logo"
               width={149}
               height={32}

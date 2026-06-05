@@ -4,7 +4,7 @@ import { getDefaultConfig } from "connectkit"
 import type { HttpTransport } from "viem"
 import { createConfig, http } from "wagmi"
 import { coinbaseWallet, injected, walletConnect } from "wagmi/connectors"
-import { APP_NAME, NETWORK_ENV, WALLET_CONNECT_ID } from "@/config/constants"
+import { APP_NAME, APP_URL, NETWORK_ENV, WALLET_CONNECT_ID } from "@/config/constants"
 
 const chainIds = Object.values(EVM_NETWORKS).filter((e) => {
   return NETWORK_ENV === "mainnet"
@@ -27,7 +27,7 @@ function createWagmiConfig(): any {
     injected({ shimDisconnect: true }),
     coinbaseWallet({
       appName: APP_NAME,
-      appLogoUrl: "https://app.hyperbridge.network/logo.svg",
+      appLogoUrl: `${APP_URL}/logo.svg`,
     }),
   ]
 

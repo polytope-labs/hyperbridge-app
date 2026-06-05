@@ -3,8 +3,7 @@
 interface ImportMetaEnv {
   readonly MODE: string
   readonly VITE_APP_ENV?: string
-  readonly VITE_VERCEL_BRANCH_URL?: string
-  readonly VERCEL_BRANCH_URL?: string
+  readonly VITE_APP_URL?: string
   readonly VITE_LOG_LEVEL?: string
   readonly VITE_ANKR_API_KEY?: string
   readonly VITE_WALLETCONNECT_ID?: string

@@ -15,6 +15,7 @@ import {
 import { memoize } from "lodash-es"
 import { computed, makeAutoObservable } from "mobx"
 import type { Address } from "viem"
+import { resolvePublicUrl } from "@hyperbridge-fe/shared/lib"
 import { mainnetAddresses, testnetAddresses } from "@/config/addresses"
 import { NETWORK_ENV, NETWORK_STORAGE_KEY } from "@/config/constants"
 import { ALL_NETWORKS, BRIDGE_NETWORKS } from "@/config/registry"
@@ -28,6 +29,13 @@ import type {
   NetworkConfig,
   RelayChainConfig,
 } from "@/types"
+
+function withResolvedLogo(network: NetworkConfig): NetworkConfig {
+  return {
+    ...network,
+    logo: resolvePublicUrl(network.logo),
+  }
+}
 
 export class GatewayConfig {
   environment = NETWORK_ENV
@@ -116,7 +124,9 @@ export class GatewayConfig {
     if (chainIds.length === 0) return byEnv
 
     const chainIdSet = new Set(chainIds)
-    return byEnv.filter((network) => chainIdSet.has(String(network.chainId)))
+    return byEnv
+      .filter((network) => chainIdSet.has(String(network.chainId)))
+      .map(withResolvedLogo)
   })
 
   /** Default source chain for the bridge UI */
@@ -152,9 +162,13 @@ export class GatewayConfig {
   networkList = computed((): NetworkConfig[] => {
     switch (this.environment) {
       case "mainnet":
-        return ALL_NETWORKS.filter((e) => e.networkType === "mainnet")
+        return ALL_NETWORKS.filter((e) => e.networkType === "mainnet").map(
+          withResolvedLogo,
+        )
       default:
-        return ALL_NETWORKS.filter((e) => e.networkType === "testnet")
+        return ALL_NETWORKS.filter((e) => e.networkType === "testnet").map(
+          withResolvedLogo,
+        )
     }
   })
 
@@ -179,14 +193,17 @@ export class GatewayConfig {
   get getNetwork() {
     return memoize(
       function getNetworkById(chainId: ChainId): NetworkConfig | null {
-        return (
+        const network =
           ALL_NETWORKS.find((network) => {
             return (
               chainEq(network.chainId, chainId) &&
               NETWORK_ENV === network.networkType
             )
           }) ?? null
-        )
+
+        if (!network) return null
+
+        return withResolvedLogo(network)
       },
       (chainId) => `${chainId}/${NETWORK_ENV}`,
     )

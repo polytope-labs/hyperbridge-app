@@ -1,3 +1,4 @@
+import { resolvePublicUrl } from "@hyperbridge-fe/shared/lib"
 import { Button, Text } from "@hyperbridge/ui"
 import { Link } from "react-router"
 import { BackgroundAnimation } from "@/components/background-animation"
@@ -29,7 +30,7 @@ export function NotFoundPage() {
 
         <section className="relative mx-auto mt-10 flex w-[calc(100%-18px)] justify-center md:w-full md:![--float-scale:9.625rem] [&]:[--float-scale:6.6875rem]">
           <FloatingImage
-            src={"/assets/illustrations/star.webp"}
+            src={resolvePublicUrl("/assets/illustrations/star.webp")}
             alt="Star illustration"
             className="size-(--float-scale) -mr-[6%]"
             delay={0}
@@ -41,7 +42,7 @@ export function NotFoundPage() {
           />
 
           <FloatingImage
-            src={"/assets/illustrations/clover.webp"}
+            src={resolvePublicUrl("/assets/illustrations/clover.webp")}
             alt="Clover illustration"
             className="size-(--float-scale) -mx-[8%]"
             delay={1.5}
@@ -53,7 +54,7 @@ export function NotFoundPage() {
           />
 
           <FloatingImage
-            src={"/assets/illustrations/triangle.webp"}
+            src={resolvePublicUrl("/assets/illustrations/triangle.webp")}
             alt="Triangle illustration"
             className="size-(--float-scale) -mx-[8%]"
             delay={3}
@@ -65,7 +66,7 @@ export function NotFoundPage() {
           />
 
           <FloatingImage
-            src={"/assets/illustrations/diamond.webp"}
+            src={resolvePublicUrl("/assets/illustrations/diamond.webp")}
             alt="Diamond illustration"
             className="size-(--float-scale) -ml-[10%] scale-[1.08]"
             duration={6.5}

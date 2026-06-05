@@ -5,7 +5,7 @@ import {
   type NetworkTagSimple,
   Polkadot,
 } from "@hyperbridge-fe/shared"
-import { isEvmAddress, safeDict } from "@hyperbridge-fe/shared/lib"
+import { isEvmAddress, resolvePublicUrl, safeDict } from "@hyperbridge-fe/shared/lib"
 import {
   type WalletProvider,
   WalletProviderStatus,
@@ -41,11 +41,11 @@ export const getSelectedAccounts = computed((): HBUIAccount[] => {
         name: account.name,
         wallet: {
           name: provider?.wallet?.title || account.name || "Unknown",
-          image: provider?.wallet?.logo.src || "",
+          image: resolvePublicUrl(provider?.wallet?.logo.src || ""),
         },
         network: {
           name: network.name,
-          image: network.logo,
+          image: resolvePublicUrl(network.logo),
         },
       }
     })

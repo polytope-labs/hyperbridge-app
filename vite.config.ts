@@ -6,8 +6,9 @@ import tailwindcss from "@tailwindcss/vite"
 import react from "@vitejs/plugin-react"
 import { visualizer } from "rollup-plugin-visualizer"
 import { defineConfig } from "vite"
-import vercel from "vite-plugin-vercel"
 import tsconfigPaths from "vite-tsconfig-paths"
+
+const base = process.env.VITE_BASE_PATH ?? "/"
 
 const appSrc = fileURLToPath(new URL("./src", import.meta.url))
 const coreSrc = fileURLToPath(new URL("./src/core", import.meta.url))
@@ -62,8 +63,9 @@ function viteAtRootAliasPlugin({
 }
 
 export default defineConfig({
+  base,
   envDir: ".",
-  envPrefix: ["VITE_", "VERCEL_"],
+  envPrefix: ["VITE_"],
   plugins: [
     viteAtRootAliasPlugin({ appSrc, coreSrc, sharedSrc, web3ConnectSrc }),
     react({
@@ -71,7 +73,6 @@ export default defineConfig({
         plugins: ["babel-plugin-react-compiler"],
       },
     }),
-    vercel(),
     tailwindcss(),
     tsconfigPaths(),
     hyperbridge(),

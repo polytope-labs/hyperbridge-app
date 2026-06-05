@@ -30,16 +30,16 @@ export const APP_ENV: AppEnv = safeStr(
 ) as AppEnv
 
 function resolvePublicAppUrl(): string {
+  const githubPagesUrl = "https://polytope-labs.github.io/hyperbridge-frontend"
+
   if (APP_ENV === "production") {
-    return "https://app.hyperbridge.network"
+    return githubPagesUrl
   }
 
   if (typeof import.meta !== "undefined" && import.meta.env) {
-    const e = import.meta.env
-    const raw =
-      safeStr(e.VERCEL_BRANCH_URL) || safeStr(e.VITE_VERCEL_BRANCH_URL)
-    if (raw) {
-      const trimmed = raw.replace(/^https?:\/\//, "").replace(/\/$/, "")
+    const previewUrl = safeStr(import.meta.env.VITE_APP_URL)
+    if (previewUrl) {
+      const trimmed = previewUrl.replace(/^https?:\/\//, "").replace(/\/$/, "")
       const local =
         trimmed.startsWith("localhost") || trimmed.startsWith("127.")
       return `${local ? "http" : "https"}://${trimmed}`
@@ -47,10 +47,11 @@ function resolvePublicAppUrl(): string {
   }
 
   if (typeof window !== "undefined" && window.location?.origin) {
-    return window.location.origin
+    const basePath = safeStr(import.meta.env.BASE_URL, "/").replace(/\/$/, "")
+    return `${window.location.origin}${basePath}`
   }
 
-  return "https://app-staging.hyperbridge.network"
+  return githubPagesUrl
 }
 
 export const APP_URL = resolvePublicAppUrl()

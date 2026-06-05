@@ -4,6 +4,7 @@ import { u32 } from "scale-codec"
 import { bytesToHex, hexToBytes, isHex, keccak256 } from "viem"
 import tokenImages from "@/config/registry/token-images.json"
 import { safeObj, safeStr } from "@/lib/data.helpers"
+import { resolvePublicUrl } from "@/lib/public-url"
 import { O } from "@/lib/utils/fp.helpers"
 import type { Maybe, NetworkConfig } from "@/types"
 import type {
@@ -69,7 +70,9 @@ export const TokenImpl = {
       )
     }
 
-    const logo = safeStr((tokenImages as Record<string, string>)[token.symbol])
+    const logo = resolvePublicUrl(
+      safeStr((tokenImages as Record<string, string>)[token.symbol]),
+    )
     const types = new Set(["evm", "substrate"] as const)
 
     // use specified type if exists
