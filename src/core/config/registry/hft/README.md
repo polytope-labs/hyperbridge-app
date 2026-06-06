@@ -58,7 +58,7 @@ contracts must trust that pallet instance.
 
 ### Runtime prerequisites
 
-1. Add `pallet-hyper-fungible-token` to the Substrate runtime.
+1. Add `pallet-hyper-fungible-token` to the Substrate runtime with pallet name as `HyperFungibleToken`.
 2. Configure it with the runtime's ISMP dispatcher, fungible asset implementation, native currency, native asset ID, decimals, and `CreateOrigin`.
 3. Register the pallet in the ISMP router so incoming Hyperbridge messages route to `pallet_hyper_fungible_token::Pallet`.
 4. Create or confirm the local asset ID in the runtime asset registry before registering it with HFT.
