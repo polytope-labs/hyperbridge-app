@@ -113,6 +113,51 @@ The module ID must match the `PALLET_ID` configured by
 4. Add the token to the app token registry for each supported source chain. The Substrate-side entry must include the local `assetId`, token metadata, balance pallet information when required, and `recipientNetworks` pointing at the EVM destinations. The EVM-side entry must include the HFT / WrappedHFT contract address and `recipientNetworks` pointing back at the Substrate source.
 5. Run `pnpm test src/shared/config/token-registry`.
 
+The Substrate `assetId` must be the scale-encoded local asset ID registered in
+`pallet-hft` with `register_token.local_id`.
+
+### Pallet balances token example
+
+Use `pallet-balances` for a chain's native currency or another balance-backed
+asset:
+
+```typescript
+{
+  type: "substrate",
+  name: "Bifrost",
+  symbol: "BNC",
+  decimals: 12,
+  isNative: true,
+  existentialDeposit: 1,
+  assetId: "0x00000000000000000000000000000000",
+  balance: {
+    pallet_prefix: "Balances",
+    pallet_name: "pallet-balances",
+  },
+  recipientNetworks: [Ethereum],
+}
+```
+
+### Pallet assets token example
+
+Use `pallet-assets` when the token is managed by the runtime's Assets pallet:
+
+```typescript
+{
+  type: "substrate",
+  name: "Example Asset",
+  symbol: "XAST",
+  decimals: 18,
+  existentialDeposit: 1,
+  assetId: "0x81f0fa02",
+  balance: {
+    pallet_prefix: "Assets",
+    pallet_name: "pallet-assets",
+  },
+  recipientNetworks: [Ethereum],
+}
+```
+
 ## Architecture
 
 | File | Purpose |
