@@ -1,0 +1,133 @@
+@import "@hyperbridge/ui/base";
+@import "../public/fonts/fonts.css";
+
+@theme {
+  --font-aeonik: "AeonikTrail", sans-serif;
+  --font-mono: "AeonikMono", monospace;
+  --header-height: calc(var(--spacing) * 20);
+  --footer-height: 56px;
+  --content-height: calc(
+    100dvh - (var(--header-height) + var(--footer-height))
+  );
+  --animate-fade-up: fade-up 0.5s ease-out;
+  --color-destructive: #ff3860;
+}
+
+body {
+  background-color: var(--color-brand-black-600);
+  color: var(--color-brand-white-500);
+  font-family: var(--font-aeonik);
+}
+
+*::selection {
+  background-color: hsl(from var(--color-brand-warning-500) h s l / 0.5);
+  color: var(--color-white);
+  border-radius: 0.25rem;
+}
+
+input,
+textarea {
+  caret-color: var(--color-brand-warning-500);
+}
+
+@keyframes pulse-grow {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.07);
+    opacity: 0.8;
+  }
+}
+
+.animate-pulse-grow {
+  animation: pulse-grow 1.3s infinite;
+  &:hover {
+    animation: none;
+  }
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient {
+  animation: gradient 8s ease infinite;
+}
+
+/* Fix Sonner toast interaction issues */
+[data-sonner-toaster] {
+  pointer-events: auto !important;
+}
+
+[data-sonner-toast] {
+  pointer-events: auto !important;
+}
+
+[data-sonner-toast] * {
+  pointer-events: auto !important;
+}
+
+/* Ensure proper z-index */
+[data-sonner-toaster] {
+  z-index: 9999 !important;
+}
+
+[data-sonner-toast] {
+  z-index: 9999 !important;
+}
+
+/* Make sure buttons and interactive elements work */
+[data-sonner-toast] button {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+
+[data-sonner-toast] [data-slot="button"] {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+
+.leaderboard-table {
+  @apply w-full select-none;
+}
+
+.leaderboard-table table {
+  @apply w-auto md:w-full;
+}
+
+.leaderboard-table table :is(th, td) {
+  @apply whitespace-nowrap px-2 md:px-4;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+@keyframes fade-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

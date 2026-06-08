@@ -1,0 +1,15 @@
+export const TokenFaucetABI = [
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "token",
+        type: "address",
+      },
+    ],
+    name: "drip",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+] as const
