@@ -113,8 +113,9 @@ The module ID must match the `PALLET_ID` configured by
 4. Add the token to the app token registry for each supported source chain. The Substrate-side entry must include the local `assetId`, token metadata, balance pallet information when required, and `recipientNetworks` pointing at the EVM destinations. The EVM-side entry must include the HFT / WrappedHFT contract address and `recipientNetworks` pointing back at the Substrate source.
 5. Run `pnpm test src/shared/config/token-registry`.
 
-The Substrate `assetId` must be the scale-encoded local asset ID registered in
-`pallet-hft` with `register_token.local_id`.
+> **Important:** The Substrate `assetId` is the scale-encoded local asset ID
+> registered in `pallet-hft` with `register_token.local_id`. Do not use the
+> plain numeric asset ID or an EVM contract address here.
 
 ### Pallet balances token example
 
