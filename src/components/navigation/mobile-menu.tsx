@@ -5,7 +5,6 @@ import { observable } from "mobx"
 import { observer } from "mobx-react"
 import { domAnimation, LazyMotion, m } from "motion/react"
 import { Link } from "react-router"
-import { isAppStaging, isDevelopment } from "@/config/constants"
 import {
   getMobileMenuLinks,
   mobileMenuBottomLinks,
@@ -139,9 +138,7 @@ export const MobileMenuDrawer = observer(function MobileMenuDrawer(
       >
         <HBDrawerContent className="bg-brand-black-550 !inset-x-3 !bottom-4 min-h-[90svh] overflow-hidden rounded-[12px]">
           <div className="mt-2">
-            <If cond={isAppStaging || isDevelopment}>
-              <MobileNetworkEnvSwitch />
-            </If>
+            <MobileNetworkEnvSwitch />
 
             <nav className="mt-8 space-y-4">
               {mobileMenuLinks.map((link) =>

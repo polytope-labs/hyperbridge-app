@@ -15,7 +15,6 @@ import { Image } from "@unpic/react"
 import { observer } from "mobx-react"
 import { Link } from "react-router"
 import { WalletConnectionButton } from "@/components/wallets/wallet-connection"
-import { isAppStaging, isDevelopment } from "@/config/constants"
 import { gatewayConfig } from "@/config/services/gateway-config.ts"
 import If from "@/components/utils/if"
 import { InitializeProviders } from "@/components/wallets/setup-provider"
@@ -44,7 +43,7 @@ export const Navbar = () => {
 
         <div className="flex items-center gap-2">
           <div className="hidden md:block">
-            {isAppStaging || isDevelopment ? <NetworkEnvSwitch /> : null}
+            <NetworkEnvSwitch />
           </div>
           <WalletConnectionButton />
         </div>
@@ -87,7 +86,7 @@ const NetworkEnvSwitch = observer(function NetworkEnvSwitch() {
           </span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="text-[calc(14rem/16)">
+      <DropdownMenuContent align="end" className="text-[calc(14rem/16)]">
         {[mainnet, testnet].map((e) => {
           return (
             <DropdownMenuItem
