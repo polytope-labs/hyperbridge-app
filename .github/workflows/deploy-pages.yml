@@ -18,7 +18,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      VITE_BASE_PATH: /hyperbridge-app/
+      VITE_BASE_PATH: /
       NODE_OPTIONS: --max_old_space_size=4096
     steps:
       - name: Checkout
@@ -42,7 +42,7 @@ jobs:
         run: pnpm build:pages
         env:
           VITE_APP_ENV: production
-          VITE_APP_URL: polytope-labs.github.io/hyperbridge-app
+          VITE_APP_URL: app.hyperbridge.network
           VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
           VITE_WALLETCONNECT_ID: ${{ secrets.VITE_WALLETCONNECT_ID }}
           VITE_ANKR_API_KEY: ${{ secrets.VITE_ANKR_API_KEY }}

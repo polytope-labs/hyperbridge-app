@@ -30,7 +30,7 @@ export const APP_ENV: AppEnv = safeStr(
 ) as AppEnv
 
 function resolvePublicAppUrl(): string {
-  const githubPagesUrl = "https://polytope-labs.github.io/hyperbridge-app"
+  const githubPagesUrl = "https://app.hyperbridge.network"
 
   if (APP_ENV === "production") {
     return githubPagesUrl
