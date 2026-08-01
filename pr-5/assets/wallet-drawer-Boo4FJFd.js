@@ -1,1 +1,0 @@
-import{o as r,w as n,i as s,H as l,S as i,j as e,C as c,h as p}from"./index-CktrXePQ.js";const C=r(function(){const{drawerState:a}=n,o=s()?l:i;return e.jsx(o,{open:a!=="closed",onOpenChange:t=>!t&&p(),modal:!0,children:e.jsx(c,{params:{}})})});export{C as WalletDrawer};
