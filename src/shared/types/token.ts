@@ -50,6 +50,8 @@ export type RegistryToken =
 export type HftTokenMeta = {
   type: "hft" | "wrapped-hft"
   underlying?: Address
+  /** Wrapped-hft wraps native via WETH semantics; send/balance use native value */
+  weth?: boolean
   defaultRelayerFee: string
   defaultTimeout: number
 }

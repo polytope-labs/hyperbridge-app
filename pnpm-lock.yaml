@@ -21,8 +21,8 @@ importers:
         specifier: ^0.8.1
         version: 0.8.1
       '@hyperbridge/sdk':
-        specifier: ^2.2.0
-        version: 2.2.0(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(vite@6.4.2(@types/node@20.19.41)(jiti@2.7.0)(lightningcss@1.32.0))(zod@3.25.76)
+        specifier: ^2.6.1
+        version: 2.6.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(vite@6.4.2(@types/node@20.19.41)(jiti@2.7.0)(lightningcss@1.32.0))(zod@3.25.76)
       '@hyperbridge/ui':
         specifier: ^0.0.47
         version: 0.0.47(@emotion/is-prop-valid@1.4.0)(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(tailwindcss@4.3.0)
@@ -1101,8 +1101,8 @@ packages:
     resolution: {integrity: sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ==}
     engines: {node: '>=18.18'}
 
-  '@hyperbridge/sdk@2.2.0':
-    resolution: {integrity: sha512-2I0CD5MyR78P4AhRfigDrzo0MlolYeFH6EFaMVJpKhC1XcchOjAFcbSP+fDIMoACxBWGpkclMadOEyNJDHgH2g==}
+  '@hyperbridge/sdk@2.6.1':
+    resolution: {integrity: sha512-LO5J2ZzLTnLIN/qy7lZRFBDoVuHCsmX3ueKrAIQk0TzQ/iKBmryF/n/jBqT0g4+kDLLmtd9MVMLKhmfQNK0U+w==}
     engines: {node: '>=22.x.x'}
     peerDependencies:
       vite: ^5.0.0 || ^6.0.0
@@ -4845,6 +4845,14 @@ packages:
     resolution: {integrity: sha512-LaNjtRWUBY++zB5nE/NwcaoMylSPk+S+ZHNB1TzdbMJMny6dynpAGt7X/tl/QYq3TIeE6nxHppbo2LGymrG5Pw==}
     engines: {node: '>=10'}
 
+  p-queue@8.1.1:
+    resolution: {integrity: sha512-aNZ+VfjobsWryoiPnEApGGmf5WmNsCo9xu8dfaYamG5qaLP7ClhLN6NgsFe6SwJ2UbLEBK5dv9x8Mn5+RVhMWQ==}
+    engines: {node: '>=18'}
+
+  p-timeout@6.1.4:
+    resolution: {integrity: sha512-MyIV3ZA/PmyBN/ud8vV9XzwTrNtR4jFrObymZYnZqMmW0zA8Z17vnT0rBgFE/TlohB+YCHqXMgZzb3Csp49vqg==}
+    engines: {node: '>=14.16'}
+
   p-try@2.2.0:
     resolution: {integrity: sha512-R4nPAVTAU0B9D35/Gk3uJf/7XYbQcyohSKdvAxIRSNghFl4e71hVoGnBNQz9cWaXxO2I10KTC+3jMdvvoKw6dQ==}
     engines: {node: '>=6'}
@@ -7363,7 +7371,7 @@ snapshots:
 
   '@humanwhocodes/retry@0.4.3': {}
 
-  '@hyperbridge/sdk@2.2.0(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(vite@6.4.2(@types/node@20.19.41)(jiti@2.7.0)(lightningcss@1.32.0))(zod@3.25.76)':
+  '@hyperbridge/sdk@2.6.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(vite@6.4.2(@types/node@20.19.41)(jiti@2.7.0)(lightningcss@1.32.0))(zod@3.25.76)':
     dependencies:
       '@async-generator/merge-race': 1.0.3
       '@polkadot/api': 16.5.6(bufferutil@4.1.0)(utf-8-validate@5.0.10)
@@ -7377,6 +7385,7 @@ snapshots:
       graphql-request: 7.4.0(graphql@16.14.0)
       idb-keyval: 6.2.4
       lodash-es: 4.18.1
+      p-queue: 8.1.1
       rpc-websocket-client: 1.1.4(bufferutil@4.1.0)(utf-8-validate@5.0.10)
       scale-ts: 1.6.1
       std-env: 3.10.0
@@ -12884,6 +12893,13 @@ snapshots:
   p-locate@5.0.0:
     dependencies:
       p-limit: 3.1.0
+
+  p-queue@8.1.1:
+    dependencies:
+      eventemitter3: 5.0.4
+      p-timeout: 6.1.4
+
+  p-timeout@6.1.4: {}
 
   p-try@2.2.0: {}
 

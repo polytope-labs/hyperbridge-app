@@ -34,6 +34,7 @@ export function buildHftRegistry(
         hft: {
           type: deployment.type,
           underlying: deployment.underlying,
+          weth: deployment.weth,
           defaultRelayerFee: def.defaultRelayerFee,
           defaultTimeout: def.defaultTimeout,
         },
