@@ -34,7 +34,8 @@ use HFT contracts on EVM and `pallet-hft` on Substrate.
       type: "wrapped-hft",
       underlying: "0x...",  // canonical ERC20
       weth: true,           // only if the contract's isWeth() is true:
-                            // sends spend native via msg.value, balances read native
+                            // sends spend native via msg.value; the app shows the
+                            // native balance and symbol (e.g. tBNB) in the form
     },
     {
       chainId: Base.chainId,

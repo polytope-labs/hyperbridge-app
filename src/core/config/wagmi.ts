@@ -1,7 +1,7 @@
 import type { NetworkConfig } from "@hyperbridge-fe/shared"
 import { EVM_NETWORKS, VIEM_CHAIN_MAP } from "@hyperbridge-fe/shared/config"
 import { getDefaultConfig } from "connectkit"
-import type { HttpTransport } from "viem"
+import { fallback, type Transport } from "viem"
 import { createConfig, http } from "wagmi"
 import { coinbaseWallet, injected, walletConnect } from "wagmi/connectors"
 import { APP_NAME, APP_URL, NETWORK_ENV, WALLET_CONNECT_ID } from "@/config/constants"
@@ -52,10 +52,16 @@ function createWagmiConfig(): any {
   return createConfig(getDefaultConfig(config as any))
 }
 
+// Fall back through every configured RPC so one flaky endpoint doesn't
+// zero out balances or block sends for the whole chain.
 const networkToTransport = (
   network: NetworkConfig,
-): [number, HttpTransport] => {
-  return [Number(network.chainId), http(network.rpcUrls[0])]
+): [number, Transport] => {
+  const transports = network.rpcUrls.map((url) => http(url))
+  return [
+    Number(network.chainId),
+    transports.length > 1 ? fallback(transports) : transports[0],
+  ]
 }
 
 export type WagmiChainId = number

@@ -15,6 +15,7 @@ import { TokenFaucetABI } from "@/abis/TokenFaucet"
 import { gatewayConfig } from "@/config/services/gateway-config"
 import { WagmiConfig } from "@/config/wagmi"
 import { rootLogger } from "@/lib/logger"
+import { evmFeeOverrides } from "@/lib/utils/gas"
 
 const logger = rootLogger.withTag("FeeTokenPrep")
 
@@ -134,6 +135,8 @@ export async function requestFeeTokenDrip(params: {
 
   await switchChain(WagmiConfig, { chainId: params.source.chainId })
 
+  const feeOverrides = await evmFeeOverrides(params.source.chainId)
+
   const hash = await writeContract(WagmiConfig, {
     abi: TokenFaucetABI,
     address: faucet,
@@ -141,6 +144,7 @@ export async function requestFeeTokenDrip(params: {
     args: [params.feeTokenAddress],
     chainId: params.source.chainId,
     account: params.owner,
+    ...feeOverrides,
   })
 
   await waitForTransactionReceipt(WagmiConfig, {
