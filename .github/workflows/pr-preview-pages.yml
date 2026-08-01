@@ -1,0 +1,132 @@
+name: Deploy PR Preview
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: pages-preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  PREVIEW_BRANCH: gh-pages
+  PREVIEW_PATH: pr-${{ github.event.pull_request.number }}
+
+jobs:
+  deploy:
+    if: github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: --max_old_space_size=4096
+      VITE_BASE_PATH: /pr-${{ github.event.pull_request.number }}/
+      PREVIEW_URL: https://app.hyperbridge.network/pr-${{ github.event.pull_request.number }}/
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build preview
+        run: pnpm build:pages
+        env:
+          VITE_APP_ENV: preview
+          VITE_APP_URL: ${{ env.PREVIEW_URL }}
+          VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
+          VITE_WALLETCONNECT_ID: ${{ secrets.VITE_WALLETCONNECT_ID }}
+          VITE_ANKR_API_KEY: ${{ secrets.VITE_ANKR_API_KEY }}
+          VITE_ALCHEMY_API_KEY: ${{ secrets.VITE_ALCHEMY_API_KEY }}
+          VITE_MAINNET_INDEXER_URL: ${{ secrets.VITE_MAINNET_INDEXER_URL }}
+          VITE_TESTNET_INDEXER_URL: ${{ secrets.VITE_TESTNET_INDEXER_URL }}
+          VITE_POSTHOG_KEY: ${{ secrets.VITE_POSTHOG_KEY }}
+          VITE_GOOGLE_ANALYTICS_ID: ${{ secrets.VITE_GOOGLE_ANALYTICS_ID }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+
+      - name: Remove production custom domain marker
+        run: rm -f dist/CNAME
+
+      # Clone the preview branch, or bootstrap it if it doesn't exist yet.
+      - name: Checkout preview branch
+        run: |
+          repo_url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          if ! git clone --depth 1 --branch "${PREVIEW_BRANCH}" "$repo_url" preview-pages; then
+            mkdir preview-pages
+            cd preview-pages
+            git init -b "${PREVIEW_BRANCH}"
+            git remote add origin "$repo_url"
+          fi
+
+      - name: Publish preview
+        run: |
+          rm -rf "preview-pages/${PREVIEW_PATH}"
+          mkdir -p "preview-pages/${PREVIEW_PATH}"
+          cp -R dist/. "preview-pages/${PREVIEW_PATH}/"
+          touch preview-pages/.nojekyll
+
+          cd preview-pages
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No preview changes to publish."
+          else
+            git commit -m "deploy: ${{ github.event.pull_request.head.sha }}"
+            git push origin "${PREVIEW_BRANCH}"
+          fi
+
+      - name: Comment preview URL
+        uses: actions/github-script@v7
+        env:
+          PREVIEW_URL: ${{ env.PREVIEW_URL }}
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+            const headSha = context.payload.pull_request?.head?.sha ?? context.sha;
+            const shortSha = headSha.slice(0, 7);
+            const runUrl = `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`;
+            const body = [
+              `Preview deployed for \`${shortSha}\`: [Open preview](${process.env.PREVIEW_URL})`,
+              "",
+              `[View workflow run](${runUrl})`,
+            ].join("\n");
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number,
+              body,
+            });
+
+  cleanup:
+    if: github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Remove preview
+        run: |
+          repo_url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          git clone --depth 1 --branch "${PREVIEW_BRANCH}" "$repo_url" preview-pages || exit 0
+          cd preview-pages
+          if [ -d "${PREVIEW_PATH}" ]; then
+            rm -rf "${PREVIEW_PATH}"
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git commit -m "Remove preview ${PREVIEW_PATH}"
+            git push origin "${PREVIEW_BRANCH}"
+          fi
