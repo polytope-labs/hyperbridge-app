@@ -10,6 +10,12 @@ export type HftDeployment = {
   type: HftTokenType
   /** Underlying ERC20 for wrapped-hft tokens (e.g. WBNB on BSC) */
   underlying?: Address
+  /**
+   * True when the wrapped-hft wraps the chain's WETH-style native wrapper
+   * (contract isWeth() == true). Sends spend the native token via msg.value
+   * and balances are read from the native balance, not an ERC20.
+   */
+  weth?: boolean
 }
 
 /**
@@ -37,6 +43,8 @@ export type HftTokenDefinition = {
 export type HftTokenMeta = {
   type: HftTokenType
   underlying?: Address
+  /** Wrapped-hft wraps native via WETH semantics; send/balance use native value */
+  weth?: boolean
   defaultRelayerFee: string
   defaultTimeout: number
 }

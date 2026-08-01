@@ -33,6 +33,8 @@ use HFT contracts on EVM and `pallet-hft` on Substrate.
       address: "0x...",     // WrappedHFT on home chain
       type: "wrapped-hft",
       underlying: "0x...",  // canonical ERC20
+      weth: true,           // only if the contract's isWeth() is true:
+                            // sends spend native via msg.value, balances read native
     },
     {
       chainId: Base.chainId,
@@ -173,7 +175,7 @@ Use `pallet-assets` when the token is managed by the runtime's Assets pallet:
 
 The WBNB test pair matches the SDK integration tests:
 
-- BSC Testnet WrappedHFT: `0x56a77F44a08cf357F59Cc3ae3de7aDfDFaa973d8`
-- Polygon Amoy HFT: `0xa0D8d6E104b92113c7E2815e970cb5626270E8c1`
-- ISMP Host (both chains): `0xEB944071A9Bf22810757C5BcFf7a2aE9663a311D`
+- BSC Testnet WrappedHFT (isWeth): `0x5ae3C15EFa6FC9D226c108bD3c706F2400Ab7311`
+- Polygon Amoy HFT: `0x1bd0AB7686710a66255d4EFe4826f43CF2A11a1F`
+- ISMP Host (both chains): `0x9AA003594d59C62EE17A73A569Fd7B1DbdBd71E1`
 - Token Faucet: `0xcb00f5b86aac5e2fdca9dc7f34d9bfe00b967c18`

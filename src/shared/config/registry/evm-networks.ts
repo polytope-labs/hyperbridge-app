@@ -232,7 +232,7 @@ export const BscTestnet: EVMChainConfig = {
   networkType: "testnet",
   estimatedTransferTime: "10 minutes",
   consensus: { layer: "BNB Testnet", stateId: "BSC0" },
-  ismpHost: "0xEB944071A9Bf22810757C5BcFf7a2aE9663a311D",
+  ismpHost: "0x9AA003594d59C62EE17A73A569Fd7B1DbdBd71E1",
   featureSupported: ["bridge"],
   explorer: {
     transaction_url: "https://testnet.bscscan.com/tx/[txHash]",
@@ -301,7 +301,7 @@ export const PolygonAmoy: EVMChainConfig = {
   networkType: "testnet",
   logo: "/networks/polygon.svg",
   estimatedTransferTime: "10 minutes",
-  ismpHost: "0xEB944071A9Bf22810757C5BcFf7a2aE9663a311D",
+  ismpHost: "0x9AA003594d59C62EE17A73A569Fd7B1DbdBd71E1",
   consensus: { layer: "Polygon", stateId: "POLY" },
   featureSupported: ["bridge"],
   explorer: {

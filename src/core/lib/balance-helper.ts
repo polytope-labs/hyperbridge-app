@@ -211,12 +211,15 @@ export const BalanceHelper = {
 
     const wrapperAddr = token.address as Address
 
-    const isWeth = await readContract(WagmiConfig, {
-      chainId,
-      address: wrapperAddr,
-      abi: WrappedHyperFungibleTokenABI,
-      functionName: "isWeth",
-    })
+    // Prefer the registry flag; fall back to the contract when unset.
+    const isWeth =
+      token.hft?.weth ??
+      (await readContract(WagmiConfig, {
+        chainId,
+        address: wrapperAddr,
+        abi: WrappedHyperFungibleTokenABI,
+        functionName: "isWeth",
+      }))
 
     if (isWeth) {
       const balance = await getBalance(WagmiConfig, {
