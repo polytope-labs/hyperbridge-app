@@ -227,7 +227,9 @@ export const BalanceHelper = {
         chainId,
       })
 
-      return BalanceImpl.create(balance.value, decimals, symbol)
+      // Users spend the native token, so show its symbol (e.g. tBNB), not the
+      // wrapper's registry symbol.
+      return BalanceImpl.create(balance.value, balance.decimals, balance.symbol)
     }
 
     const underlying =

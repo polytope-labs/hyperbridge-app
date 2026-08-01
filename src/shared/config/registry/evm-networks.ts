@@ -225,8 +225,9 @@ export const BscTestnet: EVMChainConfig = {
   chainId: 97,
   stateMachineId: "EVM-97",
   rpcUrls: [
-    "https://bsc-testnet-rpc.publicnode.com",
+    "https://data-seed-prebsc-1-s1.bnbchain.org:8545",
     `https://bnb-testnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}`,
+    "https://bsc-testnet-rpc.publicnode.com",
     "https://bsc-geth-testnet-rpc.blockops.network",
   ],
   networkType: "testnet",
