@@ -20,6 +20,7 @@ import {
   isHftToken,
 } from "@/lib/hft/hyper-fungible-token"
 import { rootLogger } from "@/lib/logger"
+import { evmFeeOverrides } from "@/lib/utils/gas"
 import type { EVMToken } from "@/types"
 import type { TxCreationEvents } from "@/types/tx"
 import { WagmiConfig, type WagmiChainId } from "@/config/wagmi"
@@ -90,6 +91,8 @@ export class HftBridgeTx implements BridgeTxExecutor {
       throw new Error("Wallet not connected")
     }
 
+    const feeOverrides = await evmFeeOverrides(source.chainId)
+
     const gen = hft.bridge({
       token: token.address,
       from: account.address,
@@ -113,6 +116,7 @@ export class HftBridgeTx implements BridgeTxExecutor {
           to: step.tx.to,
           data: step.tx.data,
           chainId: source.chainId as WagmiChainId,
+          ...feeOverrides,
         })
         await waitForTransactionReceipt(WagmiConfig, {
           hash,
@@ -129,6 +133,7 @@ export class HftBridgeTx implements BridgeTxExecutor {
           data: step.tx.data,
           value: step.tx.value,
           chainId: source.chainId as WagmiChainId,
+          ...feeOverrides,
         })
 
         yield {
