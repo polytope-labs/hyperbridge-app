@@ -37,7 +37,11 @@ type Id =
 export const receivedAmount = computed(() => {
   let value = Number(transferState.amount)
 
-  if (isRelayChain(transferState.sourceChain) && value > 0) {
+  if (
+    isRelayChain(transferState.sourceChain) &&
+    transferState.token.symbol === "DOT" &&
+    value > 0
+  ) {
     const fee = value * 0.001
 
     value -= fee

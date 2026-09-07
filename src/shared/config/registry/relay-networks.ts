@@ -78,7 +78,7 @@ export const Nexus: RelayChainConfig = {
     "wss://nexus.ibp.network",
   ],
   estimatedTransferTime: "10 minutes",
-  logo: "",
+  logo: "/networks/hyperbridge.png",
   consensus: { layer: "Relay", stateId: "DOT0" },
   explorer: {
     transaction_url: "https://nexus.statescan.io/#/extrinsics/[txHash]",

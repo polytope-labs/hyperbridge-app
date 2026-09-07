@@ -19,26 +19,46 @@ export function buildHftRegistry(
     if (def.disabled) continue
 
     for (const deployment of def.deployments) {
-      const recipientNetworks: Pick<NetworkConfig, "chainId" | "disabled">[] =
+      const recipientChainIds =
+        deployment.recipientChainIds ??
         def.deployments
-          .filter((d) => d.chainId !== deployment.chainId)
-          .map((d) => ({ chainId: d.chainId as NetworkConfig["chainId"] }))
+          .filter((candidate) => candidate.chainId !== deployment.chainId)
+          .map((candidate) => candidate.chainId)
+      const recipientNetworks: Pick<NetworkConfig, "chainId" | "disabled">[] =
+        recipientChainIds.map((chainId) => ({
+          chainId: chainId as NetworkConfig["chainId"],
+        }))
 
-      const entry: RegistryToken = {
+      const common = {
         name: def.name,
         symbol: def.symbol,
-        decimals: def.decimals,
-        address: deployment.address,
-        type: "evm",
+        decimals: deployment.decimals ?? def.decimals,
+        selfDelivery: def.selfDelivery,
         recipientNetworks,
-        hft: {
-          type: deployment.type,
-          underlying: deployment.underlying,
-          weth: deployment.weth,
-          defaultRelayerFee: def.defaultRelayerFee,
-          defaultTimeout: def.defaultTimeout,
-        },
       }
+
+      const entry: RegistryToken =
+        deployment.type === "substrate"
+          ? {
+              ...common,
+              type: "substrate",
+              assetId: deployment.assetId,
+              balance: deployment.balance,
+              existentialDeposit: deployment.existentialDeposit,
+              isNative: deployment.isNative,
+            }
+          : {
+              ...common,
+              type: "evm",
+              address: deployment.address,
+              hft: {
+                type: deployment.type,
+                underlying: deployment.underlying,
+                weth: deployment.weth,
+                defaultRelayerFee: def.defaultRelayerFee,
+                defaultTimeout: def.defaultTimeout,
+              },
+            }
 
       const chainTokens = registry[deployment.chainId] ?? []
       chainTokens.push(entry)

@@ -961,17 +961,18 @@ export class TransactionProgressController
   watching = false
 
   private async show_claim_button_if_delivery_status_exceeds_wait_time() {
-    this.watching = true
-
     const tx = this.transaction.get()
     const abort = this.abortController
 
+    if (!TxImpl.is_self_delivery_enabled(tx)) return
     if (TxImpl.is_timed_out(tx)) return
 
     if (TxImpl.progress_contains(tx, "DestinationDelivered")) {
       this.state.showClaimButton = "DestinationDelivered"
       return
     }
+
+    this.watching = true
 
     try {
       const events = TransactionProgressController.wait_for_delivery(tx, {

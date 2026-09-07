@@ -4,8 +4,10 @@ import { NetworkImpl } from "@hyperbridge-fe/shared/factories"
 import { Match, pipe } from "effect"
 import { gatewayConfig } from "@/config/services/gateway-config.ts"
 import { Timeline } from "@/lib/factories/timeline"
+import { getNetworkConfig } from "@/lib/utils"
 import { ms } from "@/lib/utils/date.helpers"
 import { O } from "@/lib/utils/fp.helpers"
+import type { Transaction } from "@/types/tx"
 import { createEventTf } from "../timeline-event-transformer"
 
 const basicMessage = Timeline.make("HyperbridgeVerified", {
@@ -13,17 +15,31 @@ const basicMessage = Timeline.make("HyperbridgeVerified", {
   success: "Hyperbridge Verification",
 })
 
+const isHyperbridgeSource = (tx: Transaction) => {
+  const source = getNetworkConfig(tx.source)
+  return source !== null && NetworkImpl.isHyperbridgeNetwork(source)
+}
+
 const powerUserMessage = Timeline.make("HyperbridgeVerified", {
   waiting: Timeline.matchSource({
-    relay: () => "Waiting to receive XCM on Hyperbridge",
+    relay: (tx) =>
+      isHyperbridgeSource(tx)
+        ? "Waiting for Hyperbridge to verify your transaction"
+        : "Waiting to receive XCM on Hyperbridge",
     _: () => "Waiting for Hyperbridge to verify your transaction",
   }),
   loading: Timeline.matchSource({
-    relay: () => "Waiting to receive XCM on Hyperbridge",
+    relay: (tx) =>
+      isHyperbridgeSource(tx)
+        ? "Waiting for Hyperbridge to verify your transaction"
+        : "Waiting to receive XCM on Hyperbridge",
     _: () => "Waiting for Hyperbridge to verify your transaction",
   }),
   success: Timeline.matchSource({
-    relay: () => "XCM has been dispatched from Hyperbridge",
+    relay: (tx) =>
+      isHyperbridgeSource(tx)
+        ? "Hyperbridge has verified your transaction"
+        : "XCM has been dispatched from Hyperbridge",
     _: () => "Hyperbridge has verified your transaction",
   }),
   timeout: "Unfortunately, your transaction has now timed-out.",

@@ -217,6 +217,23 @@ export function handleNetworkChange(params: {
     return
   }
 
+  const fallback_pair = findFirstTransferPair({
+    token_symbol: transferState.token.symbol,
+  })
+  const fallback_token = fallback_pair
+    ? tokenRegistry.getBySymbol(fallback_pair[0], transferState.token.symbol)
+    : null
+
+  if (fallback_pair && fallback_token) {
+    runInAction(() => {
+      setToken(fallback_token)
+      transferState.sourceChain = fallback_pair[0]
+      transferState.destChain = fallback_pair[1]
+    })
+    refetchSourceBalance({ mode: "foreground" })
+    return
+  }
+
   rootLogger.error(
     new Error(
       `Panic: Unable to infer Transfer token between from Source(${source}) -> Destination(${destination})`,
@@ -364,6 +381,19 @@ export async function verifyTransaction() {
       const indexer_client = indexerClientOrThrow(params)
 
       if (network.group === "relay") {
+        if (params.token.__type === "substrate") {
+          const instance = new SubstrateBridgeTx(
+            new SubstrateBridgeHelper(bridge_params, params.token),
+            WalletManager.getSigner("substrate"),
+          )
+
+          await instance.initialize({
+            indexerClient: await indexer_client,
+          })
+
+          return instance
+        }
+
         const instance = new PolkadotBridgeTx(
           bridge_params,
           WalletManager.getSigner("substrate"),

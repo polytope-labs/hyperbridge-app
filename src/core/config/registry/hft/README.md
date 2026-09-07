@@ -46,7 +46,9 @@ use HFT contracts on EVM and `pallet-hft` on Substrate.
 }
 ```
 
-Each deployment lists every other deployment as a bridge destination automatically — no need to maintain `recipientNetworks` manually.
+Each deployment lists every other deployment as a bridge destination automatically.
+Set `recipientChainIds` on a deployment when a token supports only a subset of
+peers or when the frontend route must be one-way.
 
 4. **Ensure EVM networks exist** in `src/shared/config/registry/evm-networks.ts` with correct `ismpHost`, `stateMachineId`, and `featureSupported: ["bridge"]`.
 5. **Run tests**: `pnpm test src/shared/config/token-registry`
@@ -80,13 +82,13 @@ TokenRegistration {
 }
 ```
 
-| Field | Meaning |
-|-------|---------|
-| `local_id` | Local asset ID in the Substrate runtime's asset registry. |
-| `native` | `true` for assets originating on this Substrate chain; `false` for imported/bridged assets. |
-| `chains` | Map of destination `StateMachine` values to per-chain HFT configuration. |
+| Field                     | Meaning                                                                                         |
+| ------------------------- | ----------------------------------------------------------------------------------------------- |
+| `local_id`                | Local asset ID in the Substrate runtime's asset registry.                                       |
+| `native`                  | `true` for assets originating on this Substrate chain; `false` for imported/bridged assets.     |
+| `chains`                  | Map of destination `StateMachine` values to per-chain HFT configuration.                        |
 | `chains[].token_contract` | Destination module ID. For EVM destinations, use the 20-byte HFT / WrappedHFT contract address. |
-| `chains[].decimals` | Destination token decimals, usually `18` for EVM contracts. |
+| `chains[].decimals`       | Destination token decimals, usually `18` for EVM contracts.                                     |
 
 For Substrate-native assets, set `native: true`; sends escrow the local asset in
 the pallet custody account. For non-native assets represented on the Substrate
@@ -113,7 +115,12 @@ The module ID must match the `PALLET_ID` configured by
 1. Add the Substrate source chain to `src/shared/config/registry/substrate-networks.ts` if it is not already present.
 2. Ensure each EVM destination exists in `src/shared/config/registry/evm-networks.ts` with `featureSupported: ["bridge"]`.
 3. Add the token logo under `public/tokens/` and register the symbol in `src/shared/config/registry/token-images.json`.
-4. Add the token to the app token registry for each supported source chain. The Substrate-side entry must include the local `assetId`, token metadata, balance pallet information when required, and `recipientNetworks` pointing at the EVM destinations. The EVM-side entry must include the HFT / WrappedHFT contract address and `recipientNetworks` pointing back at the Substrate source.
+4. Add the token to the appropriate HFT environment file. The Substrate
+   deployment must use `type: "substrate"` and include the local `assetId`,
+   per-chain `decimals`, balance pallet information, existential deposit, and
+   `recipientChainIds` for its EVM destinations. Add the EVM HFT deployments to
+   the same definition; use `recipientChainIds: []` when the UI route is
+   intentionally one-way from Substrate.
 5. Run `pnpm test src/shared/config/token-registry`.
 
 > **Important:** The Substrate `assetId` is the scale-encoded local asset ID
@@ -164,13 +171,13 @@ Use `pallet-assets` when the token is managed by the runtime's Assets pallet:
 
 ## Architecture
 
-| File | Purpose |
-|------|---------|
-| `types.ts` | `HftTokenDefinition` schema |
-| `mainnet.ts` | Mainnet tokens (empty until launch) |
-| `testnet.ts` | Testnet tokens |
-| `build-registry.ts` | Converts definitions → `ChainTokenRegistry` |
-| `index.ts` | Exports `MainAssetRegistry` / `TestAssetRegistry` |
+| File                | Purpose                                           |
+| ------------------- | ------------------------------------------------- |
+| `types.ts`          | `HftTokenDefinition` schema                       |
+| `mainnet.ts`        | Mainnet token definitions                         |
+| `testnet.ts`        | Testnet tokens                                    |
+| `build-registry.ts` | Converts definitions → `ChainTokenRegistry`       |
+| `index.ts`          | Exports `MainAssetRegistry` / `TestAssetRegistry` |
 
 ## Testnet reference
 

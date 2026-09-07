@@ -103,6 +103,16 @@ export const NetworkModal = observer(function NetworkModal(props: {
           filter(network.chainId, { isSourceChain: is_viewing_source })
       : () => true
 
+    const has_outgoing_route = (network: NetworkConfig) => {
+      if (!is_viewing_source) return true
+
+      return !tokenRegistry
+        .find_initial_pair({
+          source: network.chainId,
+        })
+        .next().done
+    }
+
     const ignore_source_network = (network: NetworkConfig) => {
       if (!is_viewing_source && props.source === network.chainId) {
         return false
@@ -111,7 +121,12 @@ export const NetworkModal = observer(function NetworkModal(props: {
       return true
     }
 
-    const all_filters = [network_filter, name_filter, ignore_source_network]
+    const all_filters = [
+      network_filter,
+      name_filter,
+      ignore_source_network,
+      has_outgoing_route,
+    ]
 
     return groupBy(
       networks.filter((network) => all_filters.every((fn) => fn(network))),

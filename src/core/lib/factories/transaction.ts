@@ -221,8 +221,16 @@ export const TxImpl = {
     return TxImpl.is_timed_out(tx)
   },
 
+  is_self_delivery_enabled(tx: Transaction): boolean {
+    if (tx.protocol.kind !== "Transfer") return true
+    if (!("token" in tx.originalParams)) return true
+
+    return tx.originalParams.token.selfDelivery !== false
+  },
+
   is_claiming_required(tx: Transaction): boolean {
     return (
+      TxImpl.is_self_delivery_enabled(tx) &&
       TxImpl.isClientFinalized(tx) &&
       matchChain(tx.destination, {
         evm: () => tx.relayerFee === 0,

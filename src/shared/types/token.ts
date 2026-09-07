@@ -9,6 +9,8 @@ export type TokenBaseStruct = {
   decimals: number
   logo: string
   disabled: boolean
+  /** Whether users may submit the destination delivery transaction themselves. */
+  selfDelivery?: boolean
 } & Record<string, unknown>
 
 type ExtendRegistryToken<T> = Prettify<
@@ -18,6 +20,8 @@ type ExtendRegistryToken<T> = Prettify<
     readonly symbol: string
     readonly decimals: number
     readonly isNative?: boolean
+    /** Defaults to true when omitted. */
+    readonly selfDelivery?: boolean
     /** Scale-encoded asset ID */
     readonly disabled?: boolean
     readonly existentialDeposit?: number

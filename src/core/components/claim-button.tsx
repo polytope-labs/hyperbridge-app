@@ -18,6 +18,7 @@ export const ShowClaimWhenButton = observer(
   }) {
     const { tx, children, showStatus: statusKey } = props
 
+    if (!TxImpl.is_self_delivery_enabled(tx)) return null
     if (TxImpl.is_timed_out(tx)) return null
     if (TxImpl.isDelivered(tx)) return null
 

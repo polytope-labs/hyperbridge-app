@@ -11,7 +11,10 @@ export class SubstrateBridgeHelper {
   }
 
   get source() {
-    if (this.params.source.group !== "substrate") {
+    if (
+      this.params.source.group !== "substrate" &&
+      this.params.source.group !== "relay"
+    ) {
       throw new Error("Source Network must be Substrate")
     }
 

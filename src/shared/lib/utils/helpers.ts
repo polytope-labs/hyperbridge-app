@@ -2,6 +2,8 @@ import { isAddress } from "@polkadot/util-crypto"
 import {
   Assethub,
   AssethubPaseo,
+  Gargantua,
+  Nexus,
   Paseo,
   Polkadot,
 } from "@/config/registry/relay-networks"
@@ -26,7 +28,12 @@ export function isNil<T>(val: T | null | undefined): val is null | undefined {
  * @param chainId
  */
 export function isRelayChain(chainId: ChainId): chainId is number {
-  return chainId === Polkadot.chainId || chainId === Paseo.chainId
+  return [
+    Polkadot.chainId,
+    Paseo.chainId,
+    Nexus.chainId,
+    Gargantua.chainId,
+  ].some((relayChainId) => relayChainId === chainId)
 }
 
 export function isSubstrate(chainId: ChainId): chainId is StateMachineId {

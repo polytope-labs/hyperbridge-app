@@ -446,6 +446,7 @@ const before_transfer_hooks = [
       ),
       sourceChain: safeReadConfig(transferState.sourceChain),
       destChain: safeReadConfig(transferState.destChain),
+      token: transferState.token,
     }),
   }),
   validateExistentialDeposit({
