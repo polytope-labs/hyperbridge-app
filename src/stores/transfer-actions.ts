@@ -61,7 +61,7 @@ export function fetchFees() {
     const token = bridge_params.bridgeParams.token
 
     if (
-      bridge_params.direction() === "evm->evm" &&
+      bridge_params.source.group === "evm" &&
       token.__type === "evm" &&
       isHftToken(token)
     ) {
@@ -364,11 +364,10 @@ export async function verifyTransaction() {
         const useHft =
           token &&
           token.__type === "evm" &&
-          isHftToken(token) &&
-          bridge_params.destination.group === "evm"
+          isHftToken(token)
 
         if (!useHft) {
-          throw new Error("Only HFT EVM bridge routes are supported")
+          throw new Error("Only HFT transfers are supported from EVM chains")
         }
 
         const instance = new HftBridgeTx(bridge_params)

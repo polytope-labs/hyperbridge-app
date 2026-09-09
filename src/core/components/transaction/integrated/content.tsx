@@ -217,9 +217,9 @@ const TTDebug = observer(function TTDebug() {
         ) : (
           <span
             className="flex items-center text-yellow-500"
-            title="This transaction won't load without an  IPostRequest"
+            title="Request details are still loading; status tracking will continue"
           >
-            <Alert /> <span>&nbsp;Missing IPostRequest</span>
+            <Alert /> <span>&nbsp;IPostRequest loading</span>
           </span>
         )}
       </p>

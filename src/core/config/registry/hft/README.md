@@ -25,6 +25,7 @@ use HFT contracts on EVM and `pallet-hft` on Substrate.
   symbol: "USDC",
   name: "USD Coin",
   decimals: 6,
+  estimatedTransferTime: "5 minutes", // optional UI override for this route
   defaultRelayerFee: "5",   // fee tokens; adjust per route
   defaultTimeout: 7200,     // seconds (2 hours)
   deployments: [

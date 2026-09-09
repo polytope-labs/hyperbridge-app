@@ -47,6 +47,8 @@ export type HftTokenDefinition = {
   symbol: string
   name: string
   decimals: number
+  /** Route-specific estimate displayed by the bridge UI. */
+  estimatedTransferTime?: string
   /** Set true to keep in registry but hide from bridge UI */
   disabled?: boolean
   /** Defaults to true. Set false when this token must always be relayer-delivered. */

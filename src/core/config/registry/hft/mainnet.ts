@@ -11,6 +11,7 @@ export const MAINNET_HFT_TOKENS: HftTokenDefinition[] = [
     symbol: "BRIDGE",
     name: "Hyperbridge",
     decimals: 18,
+    estimatedTransferTime: "5 minutes",
     selfDelivery: false,
     defaultRelayerFee: "0",
     defaultTimeout: 7200,

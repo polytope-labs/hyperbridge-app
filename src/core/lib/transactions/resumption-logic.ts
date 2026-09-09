@@ -10,6 +10,7 @@ import type {
 import { getErrorMessage } from "../error.helpers"
 import { TxImpl } from "../factories/transaction"
 import { IndexerQuery } from "../hyperbridge-indexer"
+import { getNetworkConfig } from "../utils"
 import { O } from "../utils/fp.helpers"
 import { resolveTxError } from "./bridge-evm"
 import { resumeEvmHftTx } from "./bridge-hft"
@@ -29,6 +30,23 @@ export const makeResumption = (params: { store: TransactionStore }) => {
         kind: "Dispatched",
         block_number: event.block_number,
       })
+
+      const transaction = store.transactions[event.transaction_hash]
+      const source = transaction
+        ? getNetworkConfig(transaction.source)
+        : null
+
+      // A request originating on Hyperbridge is verified as soon as its
+      // source block is included; it must not wait for the indexer to echo the
+      // SOURCE status back to the app.
+      if (source && NetworkImpl.isHyperbridgeNetwork(source)) {
+        store.progressRequest(event.transaction_hash, {
+          kind: "HyperbridgeVerified",
+          block_hash: "0x",
+          block_number: event.block_number,
+          transaction_hash: event.transaction_hash,
+        })
+      }
     }
 
     if (event.kind === "Finalized") {

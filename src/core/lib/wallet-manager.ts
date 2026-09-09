@@ -16,6 +16,34 @@ import { encodePolkaAddress } from "@/lib/polkadot.helpers"
 
 export const WalletManager = new Web3ConnManager(WagmiConfig)
 
+const emptyAccounts = (): AccountsMap => ({ evm: null, substrate: null })
+
+/**
+ * Hydrate both the current object format and the JSON-string format written by
+ * earlier versions of the wallet persistence layer.
+ */
+export const deserializeAccounts = (value: unknown): AccountsMap => {
+  let parsed = value
+
+  if (typeof value === "string") {
+    try {
+      parsed = JSON.parse(value)
+    } catch {
+      return emptyAccounts()
+    }
+  }
+
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+    return emptyAccounts()
+  }
+
+  const { evm, substrate } = parsed as Partial<AccountsMap>
+  return {
+    evm: evm && typeof evm === "object" ? evm : null,
+    substrate: substrate && typeof substrate === "object" ? substrate : null,
+  }
+}
+
 export const normalizeAccount = (account: Web3ConnectAccount) => {
   const isSubstrate = !isHex(account.address)
   const encodedAddress = isSubstrate
@@ -80,7 +108,11 @@ if (typeof window !== "undefined") {
         deserialize: deserializeProviders,
       },
       "recentProvider",
-      "accounts",
+      {
+        key: "accounts",
+        serialize: (accounts: AccountsMap) => accounts,
+        deserialize: deserializeAccounts,
+      },
     ],
   }).then(() => {
     const enforceUnifiedSubstrateAddress = () => {

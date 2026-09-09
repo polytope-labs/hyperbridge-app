@@ -80,9 +80,21 @@ export const estimatedTransferTime = computed(() => {
   return pipe(
     safeNetworkConfig(transferState.sourceChain),
     Either.fromOption(() => new Error("Error estimating transfer time")),
-    Either.flatMap((e) =>
+    Either.flatMap((network) =>
       Either.try({
-        try: () => ms(String(e.estimatedTransferTime) as DurationInput),
+        try: () => {
+          const tokenEstimate = pipe(
+            sourceToken.get(),
+            O.map((token) => token.estimatedTransferTime),
+            O.getOrUndefined,
+          )
+
+          return ms(
+            String(
+              tokenEstimate ?? network.estimatedTransferTime,
+            ) as DurationInput,
+          )
+        },
         catch: (cause) =>
           new Error("Invalid estimated transfer time", { cause }),
       }),

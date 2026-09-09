@@ -22,7 +22,7 @@
     "@dicebear/core": "^9.2.4",
     "@ethersproject/providers": "^5.8.0",
     "@galacticcouncil/api-augment": "^0.8.1",
-    "@hyperbridge/sdk": "^2.6.1",
+    "@hyperbridge/sdk": "^2.8.11",
     "@hyperbridge/ui": "^0.0.47",
     "@polkadot/api": "14.0.1",
     "@polkadot/networks": "13.3.1",

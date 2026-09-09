@@ -370,24 +370,28 @@ export class TransactionProgressController
       return
     }
 
-    if (transaction.progress.Dispatched?.status.kind !== "Dispatched") {
-      logger.debug("Awaiting Dispatched Event")
+    if (O.isNone(TxImpl.commitment(transaction))) {
+      logger.debug("Awaiting CommitmentHash Event")
       return new Promise((res, reject) => {
         const timer_id = setTimeout(() => {
           reject(new Error("Legacy Initialization Timed out"))
         }, ms("2 minutes"))
 
-        // watch for request to be defined
+        // The commitment is sufficient to begin status tracking. A request
+        // record may arrive later and is hydrated independently.
         const unsubscribe = observe(transaction, (change) => {
-          // when the dispatched property is set then beginTracking
-          if (change.type === "add" && change.name === "request") {
-            clearTimeout(timer_id)
-            res(undefined)
-            unsubscribe()
-            // They both required IPostRequest to begin tracking
-            const transaction = this.transaction.get()
-            this.syncRunningState(() => this.beginTracking(transaction))
-          }
+          if (
+            change.name !== "commitment_hash" &&
+            change.name !== "request"
+          )
+            return
+
+          const transaction = this.transaction.get()
+          if (O.isNone(TxImpl.commitment(transaction))) return
+
+          clearTimeout(timer_id)
+          res(undefined)
+          unsubscribe()
         })
       })
     }
@@ -414,21 +418,21 @@ export class TransactionProgressController
       return
     }
 
-    // ensure IPOST Request is set
+    // The status stream is keyed by commitment and does not require the full
+    // IPostRequest. Hydrate request details in the background so an indexer lag
+    // cannot prevent HyperbridgeVerified (or later statuses) from being read.
     if (!transaction.request) {
-      logger_.info("Setting missing `IPostRequest` in Tx Record.")
-
-      const request = await fetchIPostRequestByCommitmentHash({
+      logger_.info("Hydrating missing `IPostRequest` in Tx Record.")
+      void fetchIPostRequestByCommitmentHash({
         client,
         commitment_hash: commitment.value,
       })
-
-      if (!request) {
-        logger_.error("Anomaly: Unable to find IPOSTRequest for Commitment")
-        return
-      }
-
-      transaction.request = request
+        .then((request) => {
+          if (!transaction.request) transaction.request = request
+        })
+        .catch((error) => {
+          logger_.warn("Unable to hydrate IPostRequest", error)
+        })
     }
 
     this.show_claim_button_if_delivery_status_exceeds_wait_time()
@@ -445,7 +449,9 @@ export class TransactionProgressController
 
     const event_logger = logger_.withTag("event")
 
-    await this.updateMissedEvents({ mode: "send" })
+    // `trackTransaction` performs its own fast-forward before opening the live
+    // stream. Do not gate that stream on this additional reconciliation query.
+    void this.updateMissedEvents({ mode: "send" })
 
     for await (const write_event of events) {
       // @ts-expect-error I know the kind

@@ -1,5 +1,7 @@
 import { postRequestCommitment, type HyperFungibleToken } from "@hyperbridge/sdk"
 import { TokenImpl } from "@hyperbridge-fe/shared/factories"
+import { u8aToHex } from "@polkadot/util"
+import { decodeAddress } from "@polkadot/util-crypto"
 import type { HexString } from "@polkadot/util/types"
 import {
   getAccount,
@@ -44,10 +46,6 @@ export class HftBridgeTx implements BridgeTxExecutor {
 
     if (this.params.source.group !== "evm") {
       throw new Error("HftBridgeTx requires an EVM source")
-    }
-
-    if (this.params.destination.group !== "evm") {
-      throw new Error("EVM HFT sends currently require an EVM destination")
     }
 
     this.relayerFee = getHftRelayerFee(token)
@@ -96,7 +94,10 @@ export class HftBridgeTx implements BridgeTxExecutor {
     const gen = hft.bridge({
       token: token.address,
       from: account.address,
-      to: bridgeParams.recipient as HexString,
+      to: normalizeHftRecipient(
+        bridgeParams.recipient,
+        this.params.destination.group,
+      ),
       amount: bridgeParams.amount,
       dest: getDestStateMachineId(bridgeParams.destination),
       timeout: getHftTimeout(token),
@@ -173,6 +174,20 @@ export class HftBridgeTx implements BridgeTxExecutor {
 
   /** HFT sends emit PostRequestEvent on the source host. */
   static resume = resumeEvmHftTx
+}
+
+/** HFT contracts expect a raw AccountId32 for Substrate destinations. */
+export function normalizeHftRecipient(
+  recipient: string,
+  destinationGroup: "assetHub" | "evm" | "substrate" | "relay",
+): HexString {
+  if (destinationGroup === "evm") return recipient as HexString
+
+  try {
+    return u8aToHex(decodeAddress(recipient, false))
+  } catch (cause) {
+    throw new Error("Invalid Substrate destination address", { cause })
+  }
 }
 
 /** Default relayer fee for HFT fee estimation (fee tokens, not USD) */

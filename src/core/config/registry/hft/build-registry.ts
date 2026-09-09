@@ -33,6 +33,7 @@ export function buildHftRegistry(
         name: def.name,
         symbol: def.symbol,
         decimals: deployment.decimals ?? def.decimals,
+        estimatedTransferTime: def.estimatedTransferTime,
         selfDelivery: def.selfDelivery,
         recipientNetworks,
       }

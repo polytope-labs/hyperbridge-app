@@ -83,16 +83,32 @@ async function* startStream<T extends RemoteEvent>(params: {
 
   try {
     const iterator = streamer.start()[Symbol.asyncIterator]()
-    let nextStreamEvent = iterator.next()
+    let nextStreamEvent: Promise<IteratorResult<T>> | undefined =
+      iterator.next()
 
     while (true) {
       const result = await Promise.race([
-        nextStreamEvent.then((event) => ({ type: "stream" as const, event })),
-        delay(statusRefreshIntervalMs).then(() => ({ type: "refresh" as const })),
+        ...(nextStreamEvent
+          ? [
+              nextStreamEvent.then((event) => ({
+                type: "stream" as const,
+                event,
+              })),
+            ]
+          : []),
+        delay(nextStreamEvent ? statusRefreshIntervalMs : 0).then(() => ({
+          type: "refresh" as const,
+        })),
       ])
 
       if (result.type === "stream") {
-        if (result.event.done) return
+        if (result.event.done) {
+          // The SDK can discover that delivery already happened while its
+          // stream is starting. Reconcile a final snapshot before falling
+          // back to polling so that a silent close cannot hide delivery.
+          nextStreamEvent = undefined
+          continue
+        }
 
         yield {
           kind: "Progress",
@@ -109,10 +125,22 @@ async function* startStream<T extends RemoteEvent>(params: {
       } catch {
         // A fallback refresh must not tear down the live stream on a transient
         // indexer failure. The next interval will retry it.
+        if (!nextStreamEvent) await delay(statusRefreshIntervalMs)
         continue
       }
 
-      if (status.kind === "None" || status.kind === transaction.status) {
+      if (status.kind === "None") {
+        if (!nextStreamEvent) await delay(statusRefreshIntervalMs)
+        continue
+      }
+
+      const is_terminal =
+        status.kind === "Timeout" ||
+        isTxDoneStreaming(transaction, status.kind as SendEvent["kind"])
+
+      if (status.kind === transaction.status) {
+        if (is_terminal) return
+        if (!nextStreamEvent) await delay(statusRefreshIntervalMs)
         continue
       }
 
@@ -122,12 +150,7 @@ async function* startStream<T extends RemoteEvent>(params: {
         _emitter: "status_refresh",
       }
 
-      if (
-        status.kind === "Timeout" ||
-        isTxDoneStreaming(transaction, status.kind as SendEvent["kind"])
-      ) {
-        return
-      }
+      if (is_terminal) return
     }
   } catch (err) {
     yield { kind: "Error", error: err as Error, _emitter: "stream" }
@@ -149,9 +172,20 @@ export function isTxDoneStreaming(
     // else relay txs end at HyperbridgeFinalized
     evm: () => {
       return (
-        transaction.relayerFee === 0 && status_kind === "HyperbridgeFinalized"
+        isSelfDeliveryEnabled(transaction) &&
+        transaction.relayerFee === 0 &&
+        status_kind === "HyperbridgeFinalized"
       )
     },
     none: () => false,
   })
+}
+
+function isSelfDeliveryEnabled(transaction: Transaction): boolean {
+  if (transaction.protocol.kind !== "Transfer") return true
+  if (!transaction.originalParams || !("token" in transaction.originalParams)) {
+    return true
+  }
+
+  return transaction.originalParams.token.selfDelivery !== false
 }
