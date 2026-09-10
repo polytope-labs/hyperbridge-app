@@ -39,10 +39,7 @@ export function validateRelayerFee(config: {
         params.sourceChain.chainId,
       )
 
-      if (
-        inferredSourceNetwork === "substrate" &&
-        params.token.selfDelivery === false
-      ) {
+      if (params.token.selfDelivery === false) {
         return okay
       }
 
