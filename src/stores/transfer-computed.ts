@@ -37,7 +37,11 @@ type Id =
 export const receivedAmount = computed(() => {
   let value = Number(transferState.amount)
 
-  if (isRelayChain(transferState.sourceChain) && value > 0) {
+  if (
+    isRelayChain(transferState.sourceChain) &&
+    transferState.token.symbol === "DOT" &&
+    value > 0
+  ) {
     const fee = value * 0.001
 
     value -= fee
@@ -76,9 +80,21 @@ export const estimatedTransferTime = computed(() => {
   return pipe(
     safeNetworkConfig(transferState.sourceChain),
     Either.fromOption(() => new Error("Error estimating transfer time")),
-    Either.flatMap((e) =>
+    Either.flatMap((network) =>
       Either.try({
-        try: () => ms(String(e.estimatedTransferTime) as DurationInput),
+        try: () => {
+          const tokenEstimate = pipe(
+            sourceToken.get(),
+            O.map((token) => token.estimatedTransferTime),
+            O.getOrUndefined,
+          )
+
+          return ms(
+            String(
+              tokenEstimate ?? network.estimatedTransferTime,
+            ) as DurationInput,
+          )
+        },
         catch: (cause) =>
           new Error("Invalid estimated transfer time", { cause }),
       }),

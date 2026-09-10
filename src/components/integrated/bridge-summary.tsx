@@ -85,7 +85,8 @@ export const BridgeSummarySection = observer(function BridgeSummarySection() {
                   <If
                     cond={
                       bridge_params.direction() === "substrate->evm" &&
-                      bridge_params.source.group === "relay"
+                      bridge_params.source.group === "relay" &&
+                      O.isSome(safeBridgeFee.get())
                     }
                   >
                     <li className="inline-flex items-center gap-1">
@@ -99,7 +100,8 @@ export const BridgeSummarySection = observer(function BridgeSummarySection() {
                   <If
                     cond={
                       bridge_params.direction() === "substrate->evm" &&
-                      bridge_params.source.group === "substrate"
+                      (bridge_params.source.group === "substrate" ||
+                        O.isNone(safeBridgeFee.get()))
                     }
                   >
                     <li className="inline-flex items-center gap-1">

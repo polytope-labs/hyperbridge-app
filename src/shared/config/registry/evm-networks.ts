@@ -207,7 +207,7 @@ export const Bsc: EVMChainConfig = {
   networkType: "mainnet",
   estimatedTransferTime: "10 minutes",
   consensus: { layer: "BNB", stateId: "BSC0" },
-  ismpHost: "0x24B5d421Ec373FcA57325dd2F0C074009Af021F7",
+  ismpHost: "0x620128E2B19193d6Bd244a3AC8D3bBa0541B19c3",
   explorer: {
     transaction_url: "https://bscscan.com/tx/[txHash]",
     contract_url: "https://bscscan.com/address/[reference]",
@@ -278,7 +278,7 @@ export const Polygon: EVMChainConfig = {
   networkType: "mainnet",
   logo: "/networks/polygon.svg",
   estimatedTransferTime: "10 minutes",
-  ismpHost: "0xD8d3db17C1dF65b301D45C84405CcAC1395C559a",
+  ismpHost: "0x620128E2B19193d6Bd244a3AC8D3bBa0541B19c3",
   consensus: { layer: "Polygon", stateId: "POLY" },
   explorer: {
     transaction_url: "https://polygonscan.com/tx/[txHash]",

@@ -2,7 +2,14 @@ import { MAINNET_HFT_TOKENS } from "./mainnet"
 import { TESTNET_HFT_TOKENS } from "./testnet"
 import { buildHftRegistry } from "./build-registry"
 
-export type { HftTokenDefinition, HftDeployment, HftTokenType, HftTokenMeta } from "./types"
+export type {
+  HftTokenDefinition,
+  HftDeployment,
+  HftEvmDeployment,
+  HftSubstrateDeployment,
+  HftTokenType,
+  HftTokenMeta,
+} from "./types"
 export { MAINNET_HFT_TOKENS, TESTNET_HFT_TOKENS }
 export { buildHftRegistry, getHftChainIds } from "./build-registry"
 

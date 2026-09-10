@@ -13,16 +13,27 @@ const basic = Timeline.make("Dispatch", {
   success: "Transfer Initiated",
 })
 
+const isHyperbridgeSource = (tx: Transaction) => {
+  const source = getNetworkConfig(tx.source)
+  return source !== null && NetworkImpl.isHyperbridgeNetwork(source)
+}
+
 const powerUserMessage = Timeline.make("Dispatched", {
   waiting: "Waiting for transaction to begin",
   loading: Timeline.matchSource({
-    relay: (tx) => `Waiting for XCM execution on ${getNetworkName(tx.source)}`,
+    relay: (tx) =>
+      isHyperbridgeSource(tx)
+        ? `Waiting for transaction execution on ${getNetworkName(tx.source)}`
+        : `Waiting for XCM execution on ${getNetworkName(tx.source)}`,
     _: (tx) => {
       return `Waiting for transaction execution on ${getNetworkName(tx.source)}`
     },
   }),
   success: Timeline.matchSource({
-    relay: (tx) => `XCM executed on ${getNetworkName(tx.source)}`,
+    relay: (tx) =>
+      isHyperbridgeSource(tx)
+        ? "Cross chain transfer sent"
+        : `XCM executed on ${getNetworkName(tx.source)}`,
     _: () => "Cross chain transfer sent",
   }),
   timeout: "Unfortunately, your transaction has now timed-out.",

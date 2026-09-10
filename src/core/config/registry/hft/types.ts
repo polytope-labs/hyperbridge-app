@@ -1,11 +1,18 @@
 import type { Address } from "viem"
-import type { ChainId } from "@/types"
+import type { ChainId, RegistryToken } from "@/types"
 
 /** Burn/mint on remote chains; lock/unlock on the token home chain */
 export type HftTokenType = "hft" | "wrapped-hft"
 
-export type HftDeployment = {
+type HftDeploymentBase = {
   chainId: ChainId
+  /** Override the token precision on this deployment. */
+  decimals?: number
+  /** Override the automatically derived peer deployments for one-way routes. */
+  recipientChainIds?: ChainId[]
+}
+
+export type HftEvmDeployment = HftDeploymentBase & {
   address: Address
   type: HftTokenType
   /** Underlying ERC20 for wrapped-hft tokens (e.g. WBNB on BSC) */
@@ -18,6 +25,18 @@ export type HftDeployment = {
   weth?: boolean
 }
 
+type SubstrateRegistryToken = Extract<RegistryToken, { assetId: string }>
+
+export type HftSubstrateDeployment = HftDeploymentBase &
+  Pick<
+    SubstrateRegistryToken,
+    "assetId" | "balance" | "existentialDeposit" | "isNative"
+  > & {
+    type: "substrate"
+  }
+
+export type HftDeployment = HftEvmDeployment | HftSubstrateDeployment
+
 /**
  * Partner-facing token definition. Each entry describes one bridged asset
  * and its deployments across chains. The registry builder derives
@@ -28,8 +47,12 @@ export type HftTokenDefinition = {
   symbol: string
   name: string
   decimals: number
+  /** Route-specific estimate displayed by the bridge UI. */
+  estimatedTransferTime?: string
   /** Set true to keep in registry but hide from bridge UI */
   disabled?: boolean
+  /** Defaults to true. Set false when this token must always be relayer-delivered. */
+  selfDelivery?: boolean
   /**
    * Relayer fee in fee-token whole units (e.g. "5" = 5 fee tokens).
    * Used when on-chain quote is unavailable on testnet hosts.

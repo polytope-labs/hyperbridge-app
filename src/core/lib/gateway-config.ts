@@ -19,13 +19,11 @@ import { resolvePublicUrl } from "@hyperbridge-fe/shared/lib"
 import { mainnetAddresses, testnetAddresses } from "@/config/addresses"
 import { NETWORK_ENV, NETWORK_STORAGE_KEY } from "@/config/constants"
 import { ALL_NETWORKS, BRIDGE_NETWORKS } from "@/config/registry"
-import {
-  MainAssetRegistry,
-  TestAssetRegistry,
-} from "@/config/registry/hft"
+import { MainAssetRegistry, TestAssetRegistry } from "@/config/registry/hft"
 import type {
   AssetHubChainConfig,
   ChainId,
+  ChainTokenRegistry,
   NetworkConfig,
   RelayChainConfig,
 } from "@/types"
@@ -35,6 +33,28 @@ function withResolvedLogo(network: NetworkConfig): NetworkConfig {
     ...network,
     logo: resolvePublicUrl(network.logo),
   }
+}
+
+function firstRegisteredRoute(registry: ChainTokenRegistry): {
+  source: ChainId
+  destination: ChainId
+} | null {
+  for (const [source, tokens] of Object.entries(registry)) {
+    for (const token of tokens) {
+      const destination = token.recipientNetworks.find(
+        (network) => network.disabled !== true,
+      )?.chainId
+      if (destination === undefined) continue
+
+      const numericSource = Number(source)
+      return {
+        source: Number.isNaN(numericSource) ? source : numericSource,
+        destination,
+      }
+    }
+  }
+
+  return null
 }
 
 export class GatewayConfig {
@@ -132,9 +152,9 @@ export class GatewayConfig {
   /** Default source chain for the bridge UI */
   defaultSourceChain = computed((): ChainId => {
     const registry =
-      NETWORK_ENV === "mainnet" ? MainAssetRegistry : TestAssetRegistry
-    const chainIds = Object.keys(registry).map(Number) as ChainId[]
-    if (chainIds.length > 0) return chainIds[0]
+      this.environment === "mainnet" ? MainAssetRegistry : TestAssetRegistry
+    const route = firstRegisteredRoute(registry)
+    if (route) return route.source
 
     switch (this.environment) {
       case "mainnet":
@@ -147,9 +167,9 @@ export class GatewayConfig {
   /** Default destination chain for the bridge UI */
   defaultDestChain = computed((): ChainId => {
     const registry =
-      NETWORK_ENV === "mainnet" ? MainAssetRegistry : TestAssetRegistry
-    const chainIds = Object.keys(registry).map(Number) as ChainId[]
-    if (chainIds.length > 1) return chainIds[1]
+      this.environment === "mainnet" ? MainAssetRegistry : TestAssetRegistry
+    const route = firstRegisteredRoute(registry)
+    if (route) return route.destination
 
     switch (this.environment) {
       case "mainnet":

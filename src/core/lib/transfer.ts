@@ -14,6 +14,7 @@ export function validateRelayerFee(config: {
     sourceChain: NetworkConfig
     destChain: NetworkConfig
     relayerFee?: number
+    token: AnyToken
   }
 }): AppTransferValidationSchema {
   type TransferCaseParams =
@@ -32,10 +33,18 @@ export function validateRelayerFee(config: {
   return {
     validate() {
       const params = config.params()
+      const okay = Either.right({ key: "okay" as const })
 
       const inferredSourceNetwork = resolveNetworkGroup(
         params.sourceChain.chainId,
       )
+
+      if (
+        inferredSourceNetwork === "substrate" &&
+        params.token.selfDelivery === false
+      ) {
+        return okay
+      }
 
       if (inferredSourceNetwork === "evm") {
         return resolveExactCase({
@@ -52,7 +61,6 @@ export function validateRelayerFee(config: {
 
       function resolveExactCase(params: TransferCaseParams) {
         const { sourceChain: source, destChain: dest, sourceNetwork } = params
-        const okay = Either.right({ key: "okay" as const })
 
         if (sourceNetwork === "evm") {
           const isEVMToEVM = [source.chainId, dest.chainId].every((e) =>

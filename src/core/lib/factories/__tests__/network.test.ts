@@ -1,7 +1,18 @@
 import type { NetworkConfig } from "@hyperbridge-fe/shared/types"
 import { NetworkImpl } from "@hyperbridge-fe/shared/factories"
-import { Arbitrum, BscTestnet, Sepolia } from "@hyperbridge-fe/shared/config"
+import {
+  Arbitrum,
+  BscTestnet,
+  Gargantua,
+  Nexus,
+  Sepolia,
+} from "@hyperbridge-fe/shared/config"
 import { CereTestnet } from "@hyperbridge-fe/shared/config"
+import {
+  isEVMChain,
+  isRelayChain,
+  resolveNetworkGroup,
+} from "@hyperbridge-fe/shared"
 import { O } from "@/lib/utils/fp.helpers"
 import { DEFAULT_HASH } from "@/lib/utils"
 import { Paseo, Polkadot } from "@hyperbridge-fe/shared/config"
@@ -111,6 +122,17 @@ describe("stateMachineId", () => {
       `[Error: AssetHub network doesn't have a StateMachineId]`,
     )
   })
+})
+
+describe("Hyperbridge network classification", () => {
+  it.each([Nexus.chainId, Gargantua.chainId])(
+    "classifies chain %s as a Substrate relay network",
+    (chainId) => {
+      expect(isRelayChain(chainId)).toBe(true)
+      expect(isEVMChain(chainId)).toBe(false)
+      expect(resolveNetworkGroup(chainId)).toBe("substrate")
+    },
+  )
 })
 
 describe("match()", () => {

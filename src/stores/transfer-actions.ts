@@ -61,7 +61,7 @@ export function fetchFees() {
     const token = bridge_params.bridgeParams.token
 
     if (
-      bridge_params.direction() === "evm->evm" &&
+      bridge_params.source.group === "evm" &&
       token.__type === "evm" &&
       isHftToken(token)
     ) {
@@ -217,6 +217,23 @@ export function handleNetworkChange(params: {
     return
   }
 
+  const fallback_pair = findFirstTransferPair({
+    token_symbol: transferState.token.symbol,
+  })
+  const fallback_token = fallback_pair
+    ? tokenRegistry.getBySymbol(fallback_pair[0], transferState.token.symbol)
+    : null
+
+  if (fallback_pair && fallback_token) {
+    runInAction(() => {
+      setToken(fallback_token)
+      transferState.sourceChain = fallback_pair[0]
+      transferState.destChain = fallback_pair[1]
+    })
+    refetchSourceBalance({ mode: "foreground" })
+    return
+  }
+
   rootLogger.error(
     new Error(
       `Panic: Unable to infer Transfer token between from Source(${source}) -> Destination(${destination})`,
@@ -347,11 +364,10 @@ export async function verifyTransaction() {
         const useHft =
           token &&
           token.__type === "evm" &&
-          isHftToken(token) &&
-          bridge_params.destination.group === "evm"
+          isHftToken(token)
 
         if (!useHft) {
-          throw new Error("Only HFT EVM bridge routes are supported")
+          throw new Error("Only HFT transfers are supported from EVM chains")
         }
 
         const instance = new HftBridgeTx(bridge_params)
@@ -364,6 +380,19 @@ export async function verifyTransaction() {
       const indexer_client = indexerClientOrThrow(params)
 
       if (network.group === "relay") {
+        if (params.token.__type === "substrate") {
+          const instance = new SubstrateBridgeTx(
+            new SubstrateBridgeHelper(bridge_params, params.token),
+            WalletManager.getSigner("substrate"),
+          )
+
+          await instance.initialize({
+            indexerClient: await indexer_client,
+          })
+
+          return instance
+        }
+
         const instance = new PolkadotBridgeTx(
           bridge_params,
           WalletManager.getSigner("substrate"),

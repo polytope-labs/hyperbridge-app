@@ -14,7 +14,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import { ConnectKitProvider } from "connectkit"
 import { resolvePublicUrl } from "@hyperbridge-fe/shared/lib"
 import { lazy, Suspense } from "react"
-import { BrowserRouter, Route, Routes } from "react-router"
+import { BrowserRouter, HashRouter, Route, Routes } from "react-router"
 import { Toaster } from "sonner"
 import { WagmiProvider } from "wagmi"
 
@@ -87,20 +87,28 @@ function AppShell() {
 }
 
 export function App() {
+  const content = (
+    <WagmiProvider config={WagmiConfig}>
+      <QueryClientProvider client={queryClient}>
+        <ConnectKitProvider>
+          <Providers>
+            <AppShell />
+          </Providers>
+        </ConnectKitProvider>
+        {import.meta.env.DEV ? (
+          <ReactQueryDevtools initialIsOpen={false} />
+        ) : null}
+      </QueryClientProvider>
+    </WagmiProvider>
+  )
+
+  if (import.meta.env.VITE_APP_ENV === "preview") {
+    return <HashRouter>{content}</HashRouter>
+  }
+
   return (
     <BrowserRouter basename={import.meta.env.BASE_URL}>
-      <WagmiProvider config={WagmiConfig}>
-        <QueryClientProvider client={queryClient}>
-          <ConnectKitProvider>
-            <Providers>
-              <AppShell />
-            </Providers>
-          </ConnectKitProvider>
-          {import.meta.env.DEV ? (
-            <ReactQueryDevtools initialIsOpen={false} />
-          ) : null}
-        </QueryClientProvider>
-      </WagmiProvider>
+      {content}
     </BrowserRouter>
   )
 }

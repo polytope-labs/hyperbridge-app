@@ -26,7 +26,11 @@ const basicMessage = Timeline.make("DestinationDelivered", {
         })
       }
 
-      if (isRelayChain(tx.source) && isEVMChain(tx.destination)) {
+      if (
+        TxImpl.is_self_delivery_enabled(tx) &&
+        isRelayChain(tx.source) &&
+        isEVMChain(tx.destination)
+      ) {
         return claim_msg
       }
 
@@ -55,7 +59,11 @@ const powerUserMessage = Timeline.make("DestinationDelivered", {
         })
       }
 
-      if (isRelayChain(tx.source) && isEVMChain(tx.destination)) {
+      if (
+        TxImpl.is_self_delivery_enabled(tx) &&
+        isRelayChain(tx.source) &&
+        isEVMChain(tx.destination)
+      ) {
         return can_claim_funds
       }
 
@@ -65,7 +73,11 @@ const powerUserMessage = Timeline.make("DestinationDelivered", {
   loading: (tx) => {
     const dest_network_name = getNetworkName(tx.destination)
 
-    if (isRelayChain(tx.source) && isEVMChain(tx.destination)) {
+    if (
+      TxImpl.is_self_delivery_enabled(tx) &&
+      isRelayChain(tx.source) &&
+      isEVMChain(tx.destination)
+    ) {
       return `Claiming funds on ${dest_network_name}`
     }
 
