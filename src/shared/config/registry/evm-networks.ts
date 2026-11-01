@@ -1,5 +1,18 @@
-import { ALCHEMY_API_KEY, ANKR_API_KEY } from "@hyperbridge-fe/shared/constants"
-import type { EVMChainConfig } from "@/types"
+import { DRPC_PROOF_KEY } from "@hyperbridge-fe/shared/constants"
+import type { EVMChainConfig, RpcUrl } from "@/types"
+
+// Regular traffic uses free public endpoints, tried in order (the SDK uses the
+// first one). Each was checked for browser CORS, multicall and burst limits.
+//
+// Free nodes only keep proofs for recent blocks, but timeout refunds need
+// eth_getProof at the block where the request timed out, which can be hours or
+// days old. eth_getProof alone goes to a dRPC key that should be restricted to
+// that method and this app's domains, since anything in the bundle is public.
+function drpcProofUrl(network: string): RpcUrl | undefined {
+  return DRPC_PROOF_KEY
+    ? `https://lb.drpc.live/${network}/${DRPC_PROOF_KEY}`
+    : undefined
+}
 
 export const Ethereum: EVMChainConfig = {
   group: "evm",
@@ -9,7 +22,12 @@ export const Ethereum: EVMChainConfig = {
   stateMachineId: "EVM-1",
   logo: "/networks/ethereum.svg",
   estimatedTransferTime: "25 minutes",
-  rpcUrls: [`https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}`],
+  rpcUrls: [
+    "https://rpc.mevblocker.io",
+    "https://ethereum-rpc.publicnode.com",
+    "https://eth.drpc.org",
+  ],
+  proofRpcUrl: drpcProofUrl("ethereum"),
   consensus: { layer: "Ethereum", stateId: "ETH0" },
   ismpHost: "0x792A6236AF69787C40cF76b69B4c8c7B28c4cA20",
   explorer: {
@@ -18,7 +36,6 @@ export const Ethereum: EVMChainConfig = {
   },
   intentGatewayV2: {
     gatewayAddress: "0x2d61624A17f361020679FaA16fbB566C344AaF4B",
-    bundlerUrl: `https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}`,
   },
 }
 
@@ -30,7 +47,8 @@ export const Sepolia: EVMChainConfig = {
   stateMachineId: "EVM-11155111",
   logo: "/networks/ethereum.svg",
   estimatedTransferTime: "25 minutes",
-  rpcUrls: [`https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}`],
+  rpcUrls: ["https://ethereum-sepolia-rpc.publicnode.com"],
+  proofRpcUrl: drpcProofUrl("sepolia"),
   consensus: { layer: "Sepolia", stateId: "ETH0" },
   ismpHost: "0x2EdB74C269948b60ec1000040E104cef0eABaae8",
   explorer: {
@@ -46,7 +64,12 @@ export const Gnosis: EVMChainConfig = {
   chainId: 100,
   disabled: true,
   stateMachineId: "EVM-100",
-  rpcUrls: [`https://gnosis-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}`],
+  rpcUrls: [
+    "https://rpc.gnosischain.com",
+    "https://gnosis-rpc.publicnode.com",
+    "https://gnosis.drpc.org",
+  ],
+  proofRpcUrl: drpcProofUrl("gnosis"),
   networkType: "mainnet",
   estimatedTransferTime: "15 minutes",
   consensus: { layer: "Gnosis", stateId: "GNO0" },
@@ -67,9 +90,10 @@ export const Chiado: EVMChainConfig = {
   chainId: 10200,
   stateMachineId: "EVM-10200",
   rpcUrls: [
-    `https://gnosis-chiado.g.alchemy.com/v2/${ALCHEMY_API_KEY}`,
-    `https://rpc.ankr.com/gnosis_testnet/${ANKR_API_KEY}`,
+    "https://rpc.chiadochain.net",
+    "https://gnosis-chiado-rpc.publicnode.com",
   ],
+  proofRpcUrl: drpcProofUrl("gnosis-chiado"),
   networkType: "testnet",
   estimatedTransferTime: "15 minutes",
   consensus: { layer: "Gnosis Chiado", stateId: "GNO0" },
@@ -86,7 +110,8 @@ export const Base: EVMChainConfig = {
   logo: "/networks/base.svg",
   chainId: 8453,
   stateMachineId: "EVM-8453",
-  rpcUrls: [`https://base-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}`],
+  rpcUrls: ["https://mainnet.base.org", "https://base-rpc.publicnode.com"],
+  proofRpcUrl: drpcProofUrl("base"),
   networkType: "mainnet",
   estimatedTransferTime: "1 hour",
   consensus: { layer: "Ethereum", stateId: "ETH0" },
@@ -97,7 +122,6 @@ export const Base: EVMChainConfig = {
   },
   intentGatewayV2: {
     gatewayAddress: "0x2d61624A17f361020679FaA16fbB566C344AaF4B",
-    bundlerUrl: `https://base-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}`,
   },
   tags: ["opstack"],
 }
@@ -108,7 +132,8 @@ export const BaseSepolia: EVMChainConfig = {
   logo: "/networks/base.svg",
   chainId: 84532,
   stateMachineId: "EVM-84532",
-  rpcUrls: [`https://base-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}`],
+  rpcUrls: ["https://sepolia.base.org", "https://base-sepolia-rpc.publicnode.com"],
+  proofRpcUrl: drpcProofUrl("base-sepolia"),
   networkType: "testnet",
   estimatedTransferTime: "25 minutes",
   consensus: { layer: "Sepolia", stateId: "ETH0" },
@@ -126,7 +151,12 @@ export const Arbitrum: EVMChainConfig = {
   logo: "/networks/arbitrum.svg",
   chainId: 42161,
   stateMachineId: "EVM-42161",
-  rpcUrls: [`https://arb-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}`],
+  rpcUrls: [
+    "https://arb1.arbitrum.io/rpc",
+    "https://arbitrum-one-rpc.publicnode.com",
+    "https://arb-one.api.pocket.network",
+  ],
+  proofRpcUrl: drpcProofUrl("arbitrum"),
   networkType: "mainnet",
   estimatedTransferTime: "1 hour",
   consensus: { layer: "Ethereum", stateId: "ETH0" },
@@ -137,7 +167,6 @@ export const Arbitrum: EVMChainConfig = {
   },
   intentGatewayV2: {
     gatewayAddress: "0x2d61624A17f361020679FaA16fbB566C344AaF4B",
-    bundlerUrl: `https://arb-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}`,
   },
 }
 
@@ -147,7 +176,12 @@ export const ArbitrumSepolia: EVMChainConfig = {
   logo: "/networks/arbitrum.svg",
   chainId: 421614,
   stateMachineId: "EVM-421614",
-  rpcUrls: [`https://arb-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}`],
+  rpcUrls: [
+    "https://sepolia-rollup.arbitrum.io/rpc",
+    "https://arbitrum-sepolia-rpc.publicnode.com",
+    "https://arbitrum-sepolia.drpc.org",
+  ],
+  proofRpcUrl: drpcProofUrl("arbitrum-sepolia"),
   networkType: "testnet",
   estimatedTransferTime: "1 hour",
   consensus: { layer: "Sepolia", stateId: "ETH0" },
@@ -164,7 +198,8 @@ export const Optimism: EVMChainConfig = {
   logo: "/networks/optimism.svg",
   chainId: 10,
   stateMachineId: "EVM-10",
-  rpcUrls: [`https://opt-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}`],
+  rpcUrls: ["https://mainnet.optimism.io", "https://optimism-rpc.publicnode.com"],
+  proofRpcUrl: drpcProofUrl("optimism"),
   networkType: "mainnet",
   estimatedTransferTime: "1 hour",
   consensus: { layer: "Ethereum", stateId: "ETH0" },
@@ -185,7 +220,11 @@ export const OptimismSepolia: EVMChainConfig = {
   logo: "/networks/optimism.svg",
   chainId: 11155420,
   stateMachineId: "EVM-11155420",
-  rpcUrls: [`https://opt-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}`],
+  rpcUrls: [
+    "https://sepolia.optimism.io",
+    "https://optimism-sepolia-rpc.publicnode.com",
+  ],
+  proofRpcUrl: drpcProofUrl("optimism-sepolia"),
   networkType: "testnet",
   estimatedTransferTime: "25 minutes",
   consensus: { layer: "Sepolia", stateId: "ETH0" },
@@ -203,7 +242,12 @@ export const Bsc: EVMChainConfig = {
   logo: "/networks/bsc.svg",
   chainId: 56,
   stateMachineId: "EVM-56",
-  rpcUrls: [`https://bnb-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}`],
+  rpcUrls: [
+    "https://bsc-rpc.publicnode.com",
+    "https://bsc-dataseed.bnbchain.org",
+    "https://bsc.blockrazor.xyz",
+  ],
+  proofRpcUrl: drpcProofUrl("bsc"),
   networkType: "mainnet",
   estimatedTransferTime: "10 minutes",
   consensus: { layer: "BNB", stateId: "BSC0" },
@@ -214,7 +258,6 @@ export const Bsc: EVMChainConfig = {
   },
   intentGatewayV2: {
     gatewayAddress: "0x2d61624A17f361020679FaA16fbB566C344AaF4B",
-    bundlerUrl: `https://bnb-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}`,
   },
 }
 
@@ -225,11 +268,11 @@ export const BscTestnet: EVMChainConfig = {
   chainId: 97,
   stateMachineId: "EVM-97",
   rpcUrls: [
-    "https://data-seed-prebsc-1-s1.bnbchain.org:8545",
-    `https://bnb-testnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}`,
     "https://bsc-testnet-rpc.publicnode.com",
-    "https://bsc-geth-testnet-rpc.blockops.network",
+    "https://bsc-testnet.drpc.org",
+    "https://data-seed-prebsc-1-s1.bnbchain.org:8545",
   ],
+  proofRpcUrl: drpcProofUrl("bsc-testnet"),
   networkType: "testnet",
   estimatedTransferTime: "10 minutes",
   consensus: { layer: "BNB Testnet", stateId: "BSC0" },
@@ -256,7 +299,8 @@ export const Soneium: EVMChainConfig = {
     layer: "Soneium",
     stateId: "ETH0",
   },
-  rpcUrls: [`https://soneium-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}`],
+  rpcUrls: ["https://rpc.soneium.org", "https://soneium.drpc.org"],
+  proofRpcUrl: drpcProofUrl("soneium"),
   estimatedTransferTime: "10 minute",
   ismpHost: "0x7F0165140D0f3251c8f6465e94E9d12C7FD40711",
   explorer: {
@@ -271,10 +315,12 @@ export const Polygon: EVMChainConfig = {
   name: "Polygon",
   chainId: 137,
   stateMachineId: "EVM-137",
-  // rpcUrls: [
-  //   "https://rpc.ankr.com/polygon/d9c18fde9e1f76458a3f5ab81a9fe3be38a0863de3a6274335a08389b5d62a59",
-  // ],
-  rpcUrls: [`https://polygon-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}`],
+  rpcUrls: [
+    "https://matic.rpc.sentio.xyz",
+    "https://polygon-bor-rpc.publicnode.com",
+    "https://polygon.drpc.org",
+  ],
+  proofRpcUrl: drpcProofUrl("polygon"),
   networkType: "mainnet",
   logo: "/networks/polygon.svg",
   estimatedTransferTime: "10 minutes",
@@ -286,7 +332,6 @@ export const Polygon: EVMChainConfig = {
   },
   intentGatewayV2: {
     gatewayAddress: "0x2d61624A17f361020679FaA16fbB566C344AaF4B",
-    bundlerUrl: `https://polygon-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}`,
   },
 }
 
@@ -297,8 +342,9 @@ export const PolygonAmoy: EVMChainConfig = {
   stateMachineId: "EVM-80002",
   rpcUrls: [
     "https://polygon-amoy-bor-rpc.publicnode.com",
-    `https://polygon-amoy.g.alchemy.com/v2/${ALCHEMY_API_KEY}`,
+    "https://polygon-amoy.drpc.org",
   ],
+  proofRpcUrl: drpcProofUrl("polygon-amoy"),
   networkType: "testnet",
   logo: "/networks/polygon.svg",
   estimatedTransferTime: "10 minutes",
@@ -319,7 +365,12 @@ export const Unichain: EVMChainConfig = {
   name: "Unichain",
   chainId: 130,
   stateMachineId: "EVM-130",
-  rpcUrls: [`https://unichain-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}`],
+  rpcUrls: [
+    "https://mainnet.unichain.org",
+    "https://unichain-rpc.publicnode.com",
+    "https://unichain.drpc.org",
+  ],
+  proofRpcUrl: drpcProofUrl("unichain"),
   networkType: "mainnet",
   logo: "/networks/unichain.svg",
   estimatedTransferTime: "10 minutes",

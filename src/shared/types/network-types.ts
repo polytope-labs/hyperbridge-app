@@ -91,6 +91,8 @@ export interface EVMChainConfig extends NetworkBaseConfig {
   chainId: WagmiChainId
   stateMachineId: StateMachineId
   rpcUrls: RpcUrl[]
+  /** Serves eth_getProof only; old-block proofs that free nodes don't keep. */
+  proofRpcUrl?: RpcUrl
   networkType: "mainnet" | "testnet"
   estimatedTransferTime: string
   ismpHost: HexString
@@ -100,7 +102,6 @@ export interface EVMChainConfig extends NetworkBaseConfig {
   }
   intentGatewayV2?: {
     gatewayAddress: HexString
-    bundlerUrl?: string
   }
   // @todo: Move to Token Registry
   assets?: Record<string, HexString>

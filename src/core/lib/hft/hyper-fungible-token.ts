@@ -1,15 +1,14 @@
 import {
-  EvmChain,
   HyperFungibleToken,
   type BridgeParams,
   type QuoteResult,
 } from "@hyperbridge/sdk"
 import { NetworkImpl } from "@hyperbridge-fe/shared/factories"
-import type { ChainId, EVMChainConfig, EVMToken } from "@/types"
+import type { ChainId, EVMToken } from "@/types"
 import { gatewayConfig } from "@/config/services/gateway-config"
 import { safeIndexerClient } from "@/lib/hyperbridge-indexer"
 import { getNetworkConfig } from "@/lib/utils"
-import { createEvmChainParams } from "@/lib/utils/evm"
+import { createSdkEvmChain } from "@/lib/utils/evm"
 import { parseEther } from "viem"
 
 const hftCache = new Map<string, HyperFungibleToken>()
@@ -25,11 +24,6 @@ export function getHftRelayerFee(token: EVMToken): bigint {
 
 export function getHftTimeout(token: EVMToken): bigint {
   return BigInt(token.hft?.defaultTimeout ?? 7200)
-}
-
-async function createEvmChain(config: EVMChainConfig) {
-  const params = createEvmChainParams(config)
-  return EvmChain.create(params.rpcUrl, params.bundlerUrl)
 }
 
 /**
@@ -52,13 +46,13 @@ export async function getHyperFungibleToken(
   }
   if (!destConfig) throw new Error(`Unknown destination chain ${destChain}`)
 
-  const source = await createEvmChain(sourceConfig)
+  const source = createSdkEvmChain(sourceConfig)
   const destinationIsEvm = destConfig.group === "evm"
   // SDK 2.8.11 accepts only an EvmChain in this constructor even though its
   // BridgeParams supports 32-byte Substrate recipients. For a non-EVM route,
   // quote() is replaced below, so the constructor's destination is never read.
   const sdkDestination = destinationIsEvm
-    ? await createEvmChain(destConfig)
+    ? createSdkEvmChain(destConfig)
     : source
 
   const ismpClient = await safeIndexerClient({
