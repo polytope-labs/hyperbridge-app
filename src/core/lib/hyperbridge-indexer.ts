@@ -1,6 +1,5 @@
 import {
   type ClientConfig,
-  createEvmChain,
   createQueryClient,
   type HexString,
   type IChain,
@@ -16,6 +15,7 @@ import { INDEXER_URL, NETWORK_ENV } from "@/config/constants"
 import { gatewayConfig } from "@/config/services/gateway-config"
 import { getNetworkConfig, safeNetworkConfig } from "@/lib/utils"
 import { rootLogger } from "./logger"
+import { createSdkEvmChain } from "./utils/evm"
 import { O, pipe } from "./utils/fp.helpers"
 
 export const IndexerQuery = {
@@ -58,10 +58,7 @@ const initHyperbridgeIndexer = (params: {
 
 async function createNetworkChain(network: NetworkConfig): Promise<IChain> {
   if (network.group === "evm") {
-    return createEvmChain(network.chainId, NetworkImpl.host_addr(network), {
-      rpcUrl: network.rpcUrls[0],
-      consensusStateId: NetworkImpl.consensuseStateId(network),
-    })
+    return createSdkEvmChain(network)
   }
 
   if (network.group === "substrate") {

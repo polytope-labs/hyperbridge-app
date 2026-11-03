@@ -50,8 +50,7 @@ jobs:
           VITE_APP_URL: ${{ env.PREVIEW_URL }}
           VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
           VITE_WALLETCONNECT_ID: ${{ secrets.VITE_WALLETCONNECT_ID }}
-          VITE_ANKR_API_KEY: ${{ secrets.VITE_ANKR_API_KEY }}
-          VITE_ALCHEMY_API_KEY: ${{ secrets.VITE_ALCHEMY_API_KEY }}
+          VITE_DRPC_PROOF_KEY: ${{ secrets.VITE_DRPC_PROOF_KEY }}
           VITE_MAINNET_INDEXER_URL: ${{ secrets.VITE_MAINNET_INDEXER_URL }}
           VITE_TESTNET_INDEXER_URL: ${{ secrets.VITE_TESTNET_INDEXER_URL }}
           VITE_POSTHOG_KEY: ${{ secrets.VITE_POSTHOG_KEY }}

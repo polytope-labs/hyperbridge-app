@@ -1,8 +1,8 @@
-import { EvmChain, IntentGateway, IntentsCoprocessor } from "@hyperbridge/sdk"
+import { IntentGateway, IntentsCoprocessor } from "@hyperbridge/sdk"
 import { gatewayConfig } from "@/config/services/gateway-config"
 import type { ChainId, EVMChainConfig } from "@/types"
 import { getNetworkConfig } from "../utils"
-import { createEvmChainParams } from "../utils/evm"
+import { createSdkEvmChain } from "../utils/evm"
 
 export const DEFAULT_INTENT_AUCTION_TIME_MS = 30_000
 
@@ -39,17 +39,8 @@ export async function initializeIntentGatewayV2(
   const sourceConfig = getNetworkConfig(sourceChain) as EVMChainConfig
   const destConfig = getNetworkConfig(destChain) as EVMChainConfig
 
-  const sourceChainParams = createEvmChainParams(sourceConfig)
-  const destChainParams = createEvmChainParams(destConfig)
-
-  const sourceEvmChain = await EvmChain.create(
-    sourceChainParams.rpcUrl,
-    sourceChainParams.bundlerUrl,
-  )
-  const destEvmChain = await EvmChain.create(
-    destChainParams.rpcUrl,
-    destChainParams.bundlerUrl,
-  )
+  const sourceEvmChain = createSdkEvmChain(sourceConfig)
+  const destEvmChain = createSdkEvmChain(destConfig)
 
   const coprocessor = await getOrCreateCoprocessor()
 

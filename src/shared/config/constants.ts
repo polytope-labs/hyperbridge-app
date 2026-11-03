@@ -60,17 +60,14 @@ export const APP_LOG_LEVEL: LogLevel = env("LOG_LEVEL")
   ? (env("LOG_LEVEL") as LogLevel)
   : "info"
 
-export const ANKR_API_KEY = env(
-  "ANKR_API_KEY",
-  process.env.NEXT_PUBLIC_ANKR_API_KEY,
-)
 export const WALLET_CONNECT_ID = env(
   "WALLETCONNECT_ID",
   process.env.NEXT_PUBLIC_WALLETCONNECT_ID,
 )
-export const ALCHEMY_API_KEY = env(
-  "ALCHEMY_API_KEY",
-  process.env.NEXT_PUBLIC_ALCHEMY_API_KEY,
+/** dRPC key used only for eth_getProof (see evm-networks.ts). */
+export const DRPC_PROOF_KEY = env(
+  "DRPC_PROOF_KEY",
+  process.env.NEXT_PUBLIC_DRPC_PROOF_KEY,
 )
 export const INFURA_API_KEY = env(
   "INFURA_API_KEY",
